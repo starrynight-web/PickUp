@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Workspace - Pick Task</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --accent: #3b82f6;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --border: #334155;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--ff-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      flex: 1;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 16px;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-family: inherit;
+      font-size: 16px;
+      transition: opacity 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button.secondary {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .alert-error {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .setup-options {
+      margin-top: 24px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+
+    .option-group {
+      margin-bottom: 16px;
+    }
+
+    .option-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .option-description {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .checkbox-group input {
+      width: auto;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+      font-size: 14px;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 16px;
+      }
+      
+      .card {
+        padding: 24px 20px;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="dashboard.html" class="brand">
+        <div class="logo">PT</div>
+        <span style="font-weight: 700;">Pick Task</span>
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="workspace.html">Workspaces</a>
+      </div>
+    </header>
+
+    <a href="workspace.html" class="back-link">← Back to Workspaces</a>
+
+    <h1>Create New Workspace</h1>
+    <p class="subtitle">Set up a new workspace for your team or project</p>
+
+    <div id="alertContainer"></div>
+
+    <form id="workspaceForm">
+      <div class="card">
+        <h2 style="margin-bottom: 20px;">Workspace Details</h2>
+        
+        <div class="form-group">
+          <label for="workspaceName">Workspace Name</label>
+          <input type="text" id="workspaceName" required placeholder="e.g., Marketing Team, Product Development">
+          <div style="font-size: 13px; color: var(--muted); margin-top: 6px;">Choose a descriptive name for your workspace</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="workspaceDescription">Description</label>
+          <textarea id="workspaceDescription" placeholder="What is the purpose of this workspace?"></textarea>
+          <div style="font-size: 13px; color: var(--muted); margin-top: 6px;">Optional: Describe what this workspace will be used for</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="workspaceVisibility">Visibility</label>
+          <select id="workspaceVisibility">
+            <option value="private">Private - Only invited members can access</option>
+            <option value="team">Team - All team members can access</option>
+            <option value="public">Public - Anyone with the link can access</option>
+          </select>
+          <div style="font-size: 13px; color: var(--muted); margin-top: 6px;">You can change this later in workspace settings</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-bottom: 20px;">Initial Setup</h2>
+        
+        <div class="setup-options">
+          <div class="option-group">
+            <div class="option-title">Default Columns</div>
+            <div class="option-description">Set up default columns for your task boards</div>
+            
+            <div class="checkbox-group">
+              <input type="checkbox" id="addTodoColumn" checked>
+              <label for="addTodoColumn">To Do</label>
+            </div>
+            
+            <div class="checkbox-group">
+              <input type="checkbox" id="addProgressColumn" checked>
+              <label for="addProgressColumn">In Progress</label>
+            </div>
+            
+            <div class="checkbox-group">
+              <input type="checkbox" id="addReviewColumn" checked>
+              <label for="addReviewColumn">Review</label>
+            </div>
+            
+            <div class="checkbox-group">
+              <input type="checkbox" id="addDoneColumn" checked>
+              <label for="addDoneColumn">Done</label>
+            </div>
+          </div>
+          
+          <div class="option-group">
+            <div class="option-title">Sample Content</div>
+            <div class="option-description">Add sample tasks to help you get started</div>
+            
+            <div class="checkbox-group">
+              <input type="checkbox" id="addSampleTasks" checked>
+              <label for="addSampleTasks">Include sample tasks</label>
+            </div>
+          </div>
+          
+          <div class="option-group">
+            <div class="option-title">Team Members</div>
+            <div class="option-description">Invite team members to your new workspace</div>
+            
+            <div class="checkbox-group">
+              <input type="checkbox" id="inviteExistingMembers">
+              <label for="inviteExistingMembers">Invite all existing team members</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit">
+            <span>Create Workspace</span>
+          </button>
+          <button type="button" class="secondary" id="cancelButton">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <footer>
+    Pick Task — Demo MVP. Replace client-side storage with real backend for production.
+  </footer>
+
+  <script>
+    // API Stub for data operations
+    const apiStub = {
+      getWorkspaceData: function() {
+        const data = localStorage.getItem('picktask_data');
+        return data ? JSON.parse(data) : { workspaces: [], users: [] };
+      },
+      
+      saveWorkspaceData: function(data) {
+        localStorage.setItem('picktask_data', JSON.stringify(data));
+      },
+      
+      getWorkspaces: function() {
+        const data = this.getWorkspaceData();
+        return data.workspaces || [];
+      },
+      
+      saveWorkspaces: function(workspaces) {
+        const data = this.getWorkspaceData();
+        data.workspaces = workspaces;
+        this.saveWorkspaceData(data);
+      },
+      
+      getCurrentUser: function() {
+        const session = localStorage.getItem('picktask_session');
+        return session ? JSON.parse(session).user : null;
+      },
+      
+      createWorkspace: function(workspaceData) {
+        const workspaces = this.getWorkspaces();
+        const user = this.getCurrentUser();
+        
+        const newWorkspace = {
+          id: 'ws_' + Date.now(),
+          name: workspaceData.name,
+          description: workspaceData.description || '',
+          visibility: workspaceData.visibility || 'private',
+          owner: user || 'Admin',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          members: workspaceData.inviteExistingMembers ? ['Admin'] : []
+        };
+        
+        workspaces.push(newWorkspace);
+        this.saveWorkspaces(workspaces);
+        
+        // Add default columns if requested
+        if (workspaceData.addDefaultColumns) {
+          this.addDefaultColumns(newWorkspace.id, workspaceData.columns);
+        }
+        
+        // Add sample tasks if requested
+        if (workspaceData.addSampleTasks) {
+          this.addSampleTasks(newWorkspace.id);
+        }
+        
+        // Set as current workspace
+        this.setCurrentWorkspace(newWorkspace.id);
+        
+        return { success: true, data: newWorkspace };
+      },
+      
+      setCurrentWorkspace: function(workspaceId) {
+        localStorage.setItem('picktask_current_workspace', workspaceId);
+      },
+      
+      addDefaultColumns: function(workspaceId, columns) {
+        const data = this.getWorkspaceData();
+        data.columns = data.columns || [];
+        
+        columns.forEach(column => {
+          data.columns.push({
+            id: 'col_' + Date.now() + Math.random().toString(36).substr(2, 5),
+            workspaceId: workspaceId,
+            name: column,
+            order: data.columns.filter(c => c.workspaceId === workspaceId).length
+          });
+        });
+        
+        this.saveWorkspaceData(data);
+      },
+      
+      addSampleTasks: function(workspaceId) {
+        const data = this.getWorkspaceData();
+        data.tasks = data.tasks || [];
+        
+        const sampleTasks = [
+          { title: 'Welcome to your new workspace!', description: 'This is a sample task. Edit or delete it to get started.' },
+          { title: 'Create your first task', description: 'Click the + button to add a new task to your board' },
+          { title: 'Invite team members', description: 'Go to the Team page to invite colleagues to collaborate' }
+        ];
+        
+        // Get columns for this workspace
+        const columns = (data.columns || []).filter(c => c.workspaceId === workspaceId);
+        
+        sampleTasks.forEach((task, index) => {
+          const columnId = columns.length > 0 ? columns[index % columns.length].id : null;
+          
+          data.tasks.push({
+            id: 'task_' + Date.now() + Math.random().toString(36).substr(2, 5),
+            workspaceId: workspaceId,
+            title: task.title,
+            description: task.description,
+            columnId: columnId,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          });
+        });
+        
+        this.saveWorkspaceData(data);
+      },
+      
+      // Add activity log entry
+      logActivity: function(message) {
+        const data = this.getWorkspaceData();
+        data.activities = data.activities || [];
+        data.activities.unshift({
+          ts: Date.now(),
+          msg: message
+        });
+        this.saveWorkspaceData(data);
+      }
+    };
+
+    // UI Functions
+    function showAlert(message, type = 'success') {
+      const alertContainer = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      alertContainer.appendChild(alert);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        alert.remove();
+      }, 5000);
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if user is logged in
+      const session = localStorage.getItem('picktask_session');
+      if (!session) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // Set up event listeners
+      document.getElementById('workspaceForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('workspaceName').value;
+        const description = document.getElementById('workspaceDescription').value;
+        const visibility = document.getElementById('workspaceVisibility').value;
+        
+        // Get setup options
+        const addTodoColumn = document.getElementById('addTodoColumn').checked;
+        const addProgressColumn = document.getElementById('addProgressColumn').checked;
+        const addReviewColumn = document.getElementById('addReviewColumn').checked;
+        const addDoneColumn = document.getElementById('addDoneColumn').checked;
+        const addSampleTasks = document.getElementById('addSampleTasks').checked;
+        const inviteExistingMembers = document.getElementById('inviteExistingMembers').checked;
+        
+        // Prepare columns to add
+        const columnsToAdd = [];
+        if (addTodoColumn) columnsToAdd.push('To Do');
+        if (addProgressColumn) columnsToAdd.push('In Progress');
+        if (addReviewColumn) columnsToAdd.push('Review');
+        if (addDoneColumn) columnsToAdd.push('Done');
+        
+        const result = apiStub.createWorkspace({
+          name,
+          description,
+          visibility,
+          addDefaultColumns: columnsToAdd.length > 0,
+          columns: columnsToAdd,
+          addSampleTasks,
+          inviteExistingMembers
+        });
+        
+        if (result.success) {
+          // Log activity
+          apiStub.logActivity(`Created new workspace: ${name}`);
+          
+          // Redirect to confirmation page
+          window.location.href = 'confirm-workspace.html';
+        } else {
+          showAlert('Failed to create workspace. Please try again.', 'error');
+        }
+      });
+      
+      document.getElementById('cancelButton').addEventListener('click', function() {
+        window.location.href = 'workspace.html';
+      });
+    });
+
+    // Small QA check
+    console.assert(typeof apiStub.createWorkspace === 'function', 'apiStub.createWorkspace should be a function');
+  </script>
+</body>
+</html>

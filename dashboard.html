@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Pick Task</title>
+  <style>
+    :root {
+      --bg: #0f1724;
+      --card: #0b1220;
+      --muted: #9aa4b2;
+      --accent: #6ee7b7;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --info: #60a5fa;
+      --glass: rgba(255, 255, 255, 0.04);
+      --radius: 14px;
+      --shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+      --maxw: 1100px;
+      --gap: 16px;
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--ff-sans);
+      background: linear-gradient(180deg, #071226 0%, #071727 60%);
+      color: #e6eef6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      padding: 0;
+    }
+
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #05202b;
+    }
+
+    nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      background: var(--glass);
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, #22c1c3, #6ee7b7);
+      color: #042226;
+      border: none;
+    }
+
+    .btn.primary:hover {
+      opacity: 0.9;
+    }
+
+    .welcome {
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .stat {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 8px 0;
+    }
+
+    .stat-desc {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22c1c3, #6ee7b7);
+      border-radius: 4px;
+    }
+
+    .activity-list {
+      list-style: none;
+    }
+
+    .activity-item {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      gap: 12px;
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .activity-time {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .action-btn {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .action-icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--glass);
+    }
+
+    .recent-tasks {
+      margin-top: 32px;
+    }
+
+    .task-list {
+      list-style: none;
+    }
+
+    .task-item {
+      padding: 16px;
+      background: var(--glass);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .task-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .task-status {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
+    .task-status.todo {
+      background: var(--info);
+    }
+
+    .task-status.inprogress {
+      background: var(--warning);
+    }
+
+    .task-status.done {
+      background: var(--accent);
+    }
+
+    .task-title {
+      font-weight: 500;
+    }
+
+    .task-assignee {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    footer {
+      margin-top: 48px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+      
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .brand {
+        margin-bottom: 16px;
+      }
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(-100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">PT</div>
+        <div>
+          <div style="font-weight:700">Pick Task</div>
+          <div style="font-size:12px;color:var(--muted)">Dashboard</div>
+        </div>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <a class="btn" href="kanban.html">Kanban</a>
+        <a class="btn" href="team.html">Team</a>
+        <a class="btn" href="memo.html">Voice Memo</a>
+        <button class="btn" id="logoutBtn">Log out</button>
+      </nav>
+    </header>
+
+    <section class="welcome">
+      <h1>Welcome back, <span id="userName">Admin</span></h1>
+      <p class="subtitle">Here's what's happening with your tasks today</p>
+    </section>
+
+    <div class="quick-actions">
+      <a href="create-task.html" class="action-btn">
+        <div class="action-icon">＋</div>
+        <div>Create Task</div>
+      </a>
+      <a href="kanban.html" class="action-btn">
+        <div class="action-icon">📋</div>
+        <div>View Board</div>
+      </a>
+      <a href="invite.html" class="action-btn">
+        <div class="action-icon">👥</div>
+        <div>Invite Team</div>
+      </a>
+      <a href="memo.html" class="action-btn">
+        <div class="action-icon">🎤</div>
+        <div>Voice Memo</div>
+      </a>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Tasks Overview</div>
+        </div>
+        <div class="stat" id="totalTasks">12</div>
+        <div class="stat-desc">Total tasks</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 65%"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted);">
+          <span>7 completed</span>
+          <span>65%</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Team Members</div>
+        </div>
+        <div class="stat" id="teamCount">3</div>
+        <div class="stat-desc">Active members</div>
+        <div style="margin-top: 16px; display: flex;">
+          <div class="task-assignee" style="margin-right: -8px;">A</div>
+          <div class="task-assignee" style="margin-right: -8px;">J</div>
+          <div class="task-assignee">M</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Upcoming Deadlines</div>
+        </div>
+        <div class="stat">2</div>
+        <div class="stat-desc">Tasks due this week</div>
+        <div style="margin-top: 16px; padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 8px;">
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span>Project launch</span>
+            <span style="color: var(--warning)">Tomorrow</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Activity</div>
+          <a href="activity.html" class="btn" style="font-size: 12px; padding: 6px 10px;">View All</a>
+        </div>
+        <ul class="activity-list" id="recentActivity">
+          <li class="activity-item">
+            <div class="activity-icon">＋</div>
+            <div class="activity-content">
+              <div class="activity-title">New task created</div>
+              <div class="activity-desc">"Design homepage" was added to Todo</div>
+              <div class="activity-time">10 minutes ago</div>
+            </div>
+          </li>
+          <li class="activity-item">
+            <div class="activity-icon">→</div>
+            <div class="activity-content">
+              <div class="activity-title">Task moved</div>
+              <div class="activity-desc">"Fix login bug" moved to In Progress</div>
+              <div class="activity-time">1 hour ago</div>
+            </div>
+          </li>
+          <li class="activity-item">
+            <div class="activity-icon">✓</div>
+            <div class="activity-content">
+              <div class="activity-title">Task completed</div>
+              <div class="activity-desc">"Write documentation" marked as done</div>
+              <div class="activity-time">2 hours ago</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Tasks</div>
+          <a href="kanban.html" class="btn" style="font-size: 12px; padding: 6px 10px;">View All</a>
+        </div>
+        <ul class="task-list">
+          <li class="task-item">
+            <div class="task-info">
+              <div class="task-status todo"></div>
+              <div class="task-title">Design homepage</div>
+            </div>
+            <div class="task-assignee">A</div>
+          </li>
+          <li class="task-item">
+            <div class="task-info">
+              <div class="task-status inprogress"></div>
+              <div class="task-title">Fix login bug</div>
+            </div>
+            <div class="task-assignee">J</div>
+          </li>
+          <li class="task-item">
+            <div class="task-info">
+              <div class="task-status done"></div>
+              <div class="task-title">Write documentation</div>
+            </div>
+            <div class="task-assignee">M</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      Pick Task — Demo MVP. Replace client-side auth with real backend for production.
+    </footer>
+  </div>
+
+  <div class="notification" id="notification">
+    <div>✅</div>
+    <div id="notification-text">Operation completed successfully</div>
+  </div>
+
+  <script>
+    // API Stub for localStorage operations
+    const apiStub = {
+      getData: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_data') || '{}');
+        } catch (e) {
+          console.error('Error reading from localStorage:', e);
+          return {};
+        }
+      },
+      
+      setData: (data) => {
+        try {
+          localStorage.setItem('picktask_data', JSON.stringify(data));
+          return true;
+        } catch (e) {
+          console.error('Error writing to localStorage:', e);
+          return false;
+        }
+      },
+      
+      getSession: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_session') || '{}');
+        } catch (e) {
+          console.error('Error reading session from localStorage:', e);
+          return {};
+        }
+      },
+      
+      clearSession: () => {
+        try {
+          localStorage.removeItem('picktask_session');
+          return true;
+        } catch (e) {
+          console.error('Error clearing session:', e);
+          return false;
+        }
+      }
+    };
+
+    // Check authentication
+    function checkAuth() {
+      const session = apiStub.getSession();
+      if (!session || !session.logged) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      
+      // Set username if available
+      if (session.user) {
+        document.getElementById('userName').textContent = session.user;
+      }
+      
+      return true;
+    }
+
+    // Load dashboard data
+    function loadDashboardData() {
+      const data = apiStub.getData();
+      
+      // Update task count
+      if (data.tasks && data.tasks.length) {
+        document.getElementById('totalTasks').textContent = data.tasks.length;
+        
+        // Calculate completed tasks
+        const completedTasks = data.tasks.filter(task => 
+          task.colId === 'c4' || task.status === 'done' || task.status === 'completed'
+        ).length;
+        
+        const progressPercent = (completedTasks / data.tasks.length) * 100;
+        document.querySelector('.progress-fill').style.width = `${progressPercent}%`;
+        document.querySelector('.progress-bar + div span:first-child').textContent = 
+          `${completedTasks} completed`;
+        document.querySelector('.progress-bar + div span:last-child').textContent = 
+          `${Math.round(progressPercent)}%`;
+      }
+      
+      // Update team count
+      if (data.users && data.users.length) {
+        document.getElementById('teamCount').textContent = data.users.length;
+      }
+      
+      // Load recent activities
+      if (data.activities && data.activities.length) {
+        const activityList = document.getElementById('recentActivity');
+        activityList.innerHTML = '';
+        
+        // Show latest 3 activities
+        const recentActivities = data.activities.slice(0, 3);
+        
+        recentActivities.forEach(activity => {
+          const li = document.createElement('li');
+          li.className = 'activity-item';
+          
+          // Determine icon based on activity type
+          let icon = '•';
+          if (activity.msg.includes('created') || activity.msg.includes('added')) icon = '＋';
+          else if (activity.msg.includes('moved')) icon = '→';
+          else if (activity.msg.includes('completed') || activity.msg.includes('done')) icon = '✓';
+          else if (activity.msg.includes('signed')) icon = '👤';
+          
+          // Format time
+          const timeDiff = Math.floor((Date.now() - activity.ts) / 60000); // minutes ago
+          let timeText = '';
+          if (timeDiff < 1) timeText = 'Just now';
+          else if (timeDiff < 60) timeText = `${timeDiff} minutes ago`;
+          else if (timeDiff < 1440) timeText = `${Math.floor(timeDiff / 60)} hours ago`;
+          else timeText = `${Math.floor(timeDiff / 1440)} days ago`;
+          
+          li.innerHTML = `
+            <div class="activity-icon">${icon}</div>
+            <div class="activity-content">
+              <div class="activity-title">${activity.msg.split(' ')[0]} task</div>
+              <div class="activity-desc">${activity.msg}</div>
+              <div class="activity-time">${timeText}</div>
+            </div>
+          `;
+          
+          activityList.appendChild(li);
+        });
+      }
+    }
+
+    // Show notification
+    function showNotification(message, isError = false) {
+      const notification = document.getElementById('notification');
+      const textEl = document.getElementById('notification-text');
+      
+      textEl.textContent = message;
+      
+      if (isError) {
+        notification.style.background = 'var(--danger)';
+        notification.querySelector('div:first-child').textContent = '❌';
+      } else {
+        notification.style.background = '';
+        notification.querySelector('div:first-child').textContent = '✅';
+      }
+      
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Initialize dashboard
+    function initDashboard() {
+      if (!checkAuth()) return;
+      
+      // Load data from localStorage
+      loadDashboardData();
+      
+      // Set up logout button
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        apiStub.clearSession();
+        window.location.href = 'index.html';
+      });
+      
+      // Check if we're coming from login with a success message
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('login') === 'success') {
+        showNotification('Login successful! Welcome back.');
+        // Remove the parameter from URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+
+    // Run initialization when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initDashboard);
+    
+    // Simple QA checks
+    console.assert(typeof localStorage !== 'undefined', 'localStorage is required');
+    console.assert(typeof JSON.parse === 'function', 'JSON.parse is required');
+  </script>
+</body>
+</html>

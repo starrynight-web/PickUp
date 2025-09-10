@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Groups - Pick Task</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --accent: #3b82f6;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --border: #334155;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--ff-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 32px;
+    }
+
+    @media (max-width: 968px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 10px 16px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-family: inherit;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button.secondary {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    button.danger {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .groups-list {
+      list-style: none;
+    }
+
+    .group-item {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .group-item:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    .group-item.selected {
+      border-color: var(--accent);
+      background-color: rgba(59, 130, 246, 0.05);
+    }
+
+    .group-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .group-name {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .group-desc {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .member-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background-color: var(--bg);
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    .member-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .alert-error {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .badge-primary {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--accent);
+    }
+
+    .badge-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .badge-warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .available-members {
+      margin-top: 16px;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+
+    .member-select-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .member-select-item:hover {
+      background-color: var(--bg);
+    }
+
+    .member-select-item input {
+      width: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="dashboard.html" class="brand">
+        <div class="logo">PT</div>
+        <span style="font-weight: 700;">Pick Task</span>
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="team.html">Team</a>
+        <a href="workspace.html">Workspace</a>
+      </div>
+    </header>
+
+    <a href="team.html" class="back-link">← Back to Team Management</a>
+
+    <h1>Team Groups</h1>
+    <p class="subtitle">Organize your team members into groups for better task management</p>
+
+    <div id="alertContainer"></div>
+
+    <div class="content">
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <h2>Groups</h2>
+            <button id="createGroupBtn">New Group</button>
+          </div>
+          <ul class="groups-list" id="groupsList">
+            <!-- Groups will be populated via JavaScript -->
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <h2 id="selectedGroupTitle">Select a Group</h2>
+            <div id="groupActions" style="display: none;">
+              <button class="secondary" id="editGroupBtn">Edit</button>
+              <button class="danger" id="deleteGroupBtn">Delete</button>
+            </div>
+          </div>
+          <div id="groupDetails">
+            <p class="empty-state">Select a group from the list to view and manage its members</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create/Edit Group Modal -->
+  <div class="modal" id="groupModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Create New Group</h2>
+        <button class="close-modal" id="closeModal">&times;</button>
+      </div>
+      <form id="groupForm">
+        <input type="hidden" id="groupId">
+        <div class="form-group">
+          <label for="groupName">Group Name</label>
+          <input type="text" id="groupName" required placeholder="e.g., Development Team">
+        </div>
+        <div class="form-group">
+          <label for="groupDescription">Description</label>
+          <textarea id="groupDescription" placeholder="What is the purpose of this group?"></textarea>
+        </div>
+        
+        <h3 style="margin: 20px 0 12px 0;">Group Members</h3>
+        
+        <div class="available-members" id="availableMembers">
+          <!-- Available members will be populated via JavaScript -->
+        </div>
+        
+        <div class="action-buttons">
+          <button type="submit" id="saveGroupBtn">Save Group</button>
+          <button type="button" class="secondary" id="cancelModal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // API Stub for data operations
+    const apiStub = {
+      getWorkspaceData: function() {
+        const data = localStorage.getItem('picktask_data');
+        return data ? JSON.parse(data) : { groups: [], users: [] };
+      },
+      
+      saveWorkspaceData: function(data) {
+        localStorage.setItem('picktask_data', JSON.stringify(data));
+      },
+      
+      getGroups: function() {
+        const data = this.getWorkspaceData();
+        return data.groups || [];
+      },
+      
+      saveGroups: function(groups) {
+        const data = this.getWorkspaceData();
+        data.groups = groups;
+        this.saveWorkspaceData(data);
+      },
+      
+      getGroup: function(id) {
+        const groups = this.getGroups();
+        return groups.find(group => group.id === id);
+      },
+      
+      getUsers: function() {
+        const data = this.getWorkspaceData();
+        return data.users || [];
+      },
+      
+      createGroup: function(groupData) {
+        const groups = this.getGroups();
+        const newGroup = {
+          id: 'group_' + Date.now(),
+          name: groupData.name,
+          description: groupData.description || '',
+          memberIds: groupData.memberIds || [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        groups.push(newGroup);
+        this.saveGroups(groups);
+        
+        return { success: true, data: newGroup };
+      },
+      
+      updateGroup: function(id, groupData) {
+        const groups = this.getGroups();
+        const index = groups.findIndex(group => group.id === id);
+        
+        if (index === -1) {
+          return { success: false, message: 'Group not found' };
+        }
+        
+        groups[index] = {
+          ...groups[index],
+          name: groupData.name,
+          description: groupData.description || '',
+          memberIds: groupData.memberIds || [],
+          updatedAt: new Date().toISOString()
+        };
+        
+        this.saveGroups(groups);
+        
+        return { success: true, data: groups[index] };
+      },
+      
+      deleteGroup: function(id) {
+        const groups = this.getGroups();
+        const index = groups.findIndex(group => group.id === id);
+        
+        if (index === -1) {
+          return { success: false, message: 'Group not found' };
+        }
+        
+        groups.splice(index, 1);
+        this.saveGroups(groups);
+        
+        return { success: true };
+      }
+    };
+
+    // UI Functions
+    function showAlert(message, type = 'success') {
+      const alertContainer = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      alertContainer.appendChild(alert);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        alert.remove();
+      }, 5000);
+    }
+
+    function renderGroupsList() {
+      const groupsList = document.getElementById('groupsList');
+      const groups = apiStub.getGroups();
+      
+      // Clear the list
+      groupsList.innerHTML = '';
+      
+      // Show empty state if no groups
+      if (groups.length === 0) {
+        const emptyState = document.createElement('li');
+        emptyState.className = 'empty-state';
+        emptyState.textContent = 'No groups created yet. Create your first group to get started!';
+        groupsList.appendChild(emptyState);
+        return;
+      }
+      
+      // Render groups
+      groups.forEach(group => {
+        const users = apiStub.getUsers();
+        const memberCount = group.memberIds ? group.memberIds.length : 0;
+        
+        const li = document.createElement('li');
+        li.className = 'group-item';
+        li.setAttribute('data-id', group.id);
+        li.innerHTML = `
+          <div class="group-header">
+            <div class="group-name">${group.name}</div>
+            <span class="badge badge-primary">${memberCount} members</span>
+          </div>
+          <div class="group-desc">${group.description || 'No description'}</div>
+        `;
+        groupsList.appendChild(li);
+      });
+      
+      // Add event listeners to group items
+      document.querySelectorAll('.group-item').forEach(item => {
+        item.addEventListener('click', function() {
+          // Remove selected class from all items
+          document.querySelectorAll('.group-item').forEach(i => {
+            i.classList.remove('selected');
+          });
+          
+          // Add selected class to clicked item
+          this.classList.add('selected');
+          
+          // Load group details
+          const groupId = this.getAttribute('data-id');
+          loadGroupDetails(groupId);
+        });
+      });
+    }
+
+    function loadGroupDetails(groupId) {
+      const group = apiStub.getGroup(groupId);
+      if (!group) return;
+      
+      const groupDetails = document.getElementById('groupDetails');
+      const selectedGroupTitle = document.getElementById('selectedGroupTitle');
+      const groupActions = document.getElementById('groupActions');
+      
+      selectedGroupTitle.textContent = group.name;
+      groupActions.style.display = 'flex';
+      
+      // Update edit and delete buttons
+      document.getElementById('editGroupBtn').setAttribute('data-id', groupId);
+      document.getElementById('deleteGroupBtn').setAttribute('data-id', groupId);
+      
+      // Get all users
+      const allUsers = apiStub.getUsers();
+      
+      // Create members list HTML
+      let membersHTML = '';
+      if (group.memberIds && group.memberIds.length > 0) {
+        const members = allUsers.filter(user => group.memberIds.includes(user.id));
+        
+        membersHTML = `
+          <h3 style="margin-bottom: 12px;">Group Members (${members.length})</h3>
+          <div class="members-grid">
+            ${members.map(member => `
+              <div class="member-chip">
+                <div class="member-avatar">${member.name.charAt(0)}</div>
+                <span>${member.name}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        membersHTML = '<p>This group has no members yet.</p>';
+      }
+      
+      groupDetails.innerHTML = `
+        <p>${group.description || 'No description provided.'}</p>
+        <p><small>Created: ${new Date(group.createdAt).toLocaleDateString()}</small></p>
+        ${membersHTML}
+      `;
+    }
+
+    function openGroupModal(groupId = null) {
+      const modal = document.getElementById('groupModal');
+      const form = document.getElementById('groupForm');
+      const modalTitle = document.getElementById('modalTitle');
+      const availableMembers = document.getElementById('availableMembers');
+      
+      // Reset form
+      form.reset();
+      document.getElementById('groupId').value = '';
+      
+      // Get all users
+      const allUsers = apiStub.getUsers();
+      
+      if (groupId) {
+        // Edit existing group
+        modalTitle.textContent = 'Edit Group';
+        const group = apiStub.getGroup(groupId);
+        
+        if (group) {
+          document.getElementById('groupId').value = group.id;
+          document.getElementById('groupName').value = group.name;
+          document.getElementById('groupDescription').value = group.description || '';
+          
+          // Render member selection
+          availableMembers.innerHTML = allUsers.map(user => `
+            <div class="member-select-item">
+              <input type="checkbox" id="user-${user.id}" value="${user.id}" 
+                ${group.memberIds && group.memberIds.includes(user.id) ? 'checked' : ''}>
+              <label for="user-${user.id}">${user.name}</label>
+            </div>
+          `).join('');
+        }
+      } else {
+        // Create new group
+        modalTitle.textContent = 'Create New Group';
+        
+        // Render member selection (all unchecked)
+        availableMembers.innerHTML = allUsers.map(user => `
+          <div class="member-select-item">
+            <input type="checkbox" id="user-${user.id}" value="${user.id}">
+            <label for="user-${user.id}">${user.name}</label>
+          </div>
+        `).join('');
+      }
+      
+      modal.classList.add('show');
+    }
+
+    function closeGroupModal() {
+      const modal = document.getElementById('groupModal');
+      modal.classList.remove('show');
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if user is logged in
+      const session = localStorage.getItem('picktask_session');
+      if (!session) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // Set up event listeners
+      document.getElementById('createGroupBtn').addEventListener('click', () => openGroupModal());
+      
+      document.getElementById('editGroupBtn').addEventListener('click', function() {
+        const groupId = this.getAttribute('data-id');
+        openGroupModal(groupId);
+      });
+      
+      document.getElementById('deleteGroupBtn').addEventListener('click', function() {
+        const groupId = this.getAttribute('data-id');
+        if (confirm('Are you sure you want to delete this group? This action cannot be undone.')) {
+          const result = apiStub.deleteGroup(groupId);
+          
+          if (result.success) {
+            showAlert('Group deleted successfully');
+            renderGroupsList();
+            
+            // Clear the group details view
+            document.getElementById('selectedGroupTitle').textContent = 'Select a Group';
+            document.getElementById('groupActions').style.display = 'none';
+            document.getElementById('groupDetails').innerHTML = 
+              '<p class="empty-state">Select a group from the list to view and manage its members</p>';
+          } else {
+            showAlert(result.message, 'error');
+          }
+        }
+      });
+      
+      document.getElementById('groupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const groupId = document.getElementById('groupId').value;
+        const name = document.getElementById('groupName').value;
+        const description = document.getElementById('groupDescription').value;
+        
+        // Get selected member IDs
+        const memberIds = [];
+        document.querySelectorAll('.member-select-item input[type="checkbox"]:checked').forEach(checkbox => {
+          memberIds.push(checkbox.value);
+        });
+        
+        let result;
+        if (groupId) {
+          // Update existing group
+          result = apiStub.updateGroup(groupId, { name, description, memberIds });
+        } else {
+          // Create new group
+          result = apiStub.createGroup({ name, description, memberIds });
+        }
+        
+        if (result.success) {
+          showAlert(`Group ${groupId ? 'updated' : 'created'} successfully`);
+          closeGroupModal();
+          renderGroupsList();
+          
+          // If we were editing, reload the group details
+          if (groupId) {
+            loadGroupDetails(groupId);
+          }
+        } else {
+          showAlert(result.message, 'error');
+        }
+      });
+      
+      document.getElementById('closeModal').addEventListener('click', closeGroupModal);
+      document.getElementById('cancelModal').addEventListener('click', closeGroupModal);
+      
+      // Render initial data
+      renderGroupsList();
+      
+      // If there are groups, select the first one by default
+      const groups = apiStub.getGroups();
+      if (groups.length > 0) {
+        const firstGroup = document.querySelector('.group-item');
+        if (firstGroup) {
+          firstGroup.click();
+        }
+      }
+    });
+
+    // Small QA check
+    console.assert(typeof apiStub.getGroups === 'function', 'apiStub.getGroups should be a function');
+  </script>
+</body>
+</html>

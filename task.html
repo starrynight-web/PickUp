@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Details - Pick Task</title>
+  <style>
+    :root {
+      --bg: #0f1724;
+      --card: #0b1220;
+      --muted: #9aa4b2;
+      --accent: #6ee7b7;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --info: #60a5fa;
+      --glass: rgba(255, 255, 255, 0.04);
+      --radius: 14px;
+      --shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+      --maxw: 1100px;
+      --gap: 16px;
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--ff-sans);
+      background: linear-gradient(180deg, #071226 0%, #071727 60%);
+      color: #e6eef6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      padding: 0;
+    }
+
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #05202b;
+    }
+
+    nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      background: var(--glass);
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, #22c1c3, #6ee7b7);
+      color: #042226;
+      border: none;
+    }
+
+    .btn.primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn.back {
+      margin-bottom: 20px;
+      align-self: flex-start;
+    }
+
+    .task-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 24px;
+    }
+
+    .task-main {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .task-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      border: none;
+      background: transparent;
+      color: inherit;
+      width: 100%;
+      padding: 8px 0;
+      font-family: inherit;
+    }
+
+    .task-title:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .meta-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .meta-value {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .task-description {
+      margin-bottom: 24px;
+    }
+
+    .description-text {
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.03);
+      color: inherit;
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .activity-list {
+      list-style: none;
+    }
+
+    .activity-item {
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      gap: 12px;
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .activity-time {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .task-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sidebar-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .assignee-selector {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .assignee-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #05202b;
+      flex-shrink: 0;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.03);
+      color: inherit;
+      font-family: inherit;
+    }
+
+    .status-selector {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .status-option {
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .status-option:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .status-option.active {
+      background: rgba(110, 231, 183, 0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    footer {
+      margin-top: 48px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @media (max-width: 900px) {
+      .task-detail-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .brand {
+        margin-bottom: 16px;
+      }
+      
+      .task-meta {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(-100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .edit-toggle {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .edit-toggle:hover {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">PT</div>
+        <div>
+          <div style="font-weight:700">Pick Task</div>
+          <div style="font-size:12px;color:var(--muted)">Task Details</div>
+        </div>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <a class="btn" href="dashboard.html">Dashboard</a>
+        <a class="btn" href="kanban.html">Kanban</a>
+        <a class="btn" href="team.html">Team</a>
+        <button class="btn" id="logoutBtn">Log out</button>
+      </nav>
+    </header>
+
+    <a href="kanban.html" class="btn back">← Back to Board</a>
+
+    <div class="task-detail-grid">
+      <div class="task-main">
+        <div class="card">
+          <div class="card-header">
+            <input type="text" class="task-title" id="taskTitle" value="Welcome to Pick Task" readonly>
+            <button class="edit-toggle" id="editTitleBtn">✏️ Edit</button>
+          </div>
+          
+          <div class="task-meta">
+            <div class="meta-item">
+              <div class="meta-label">Status</div>
+              <div class="meta-value" id="taskStatus">To Do</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Assignee</div>
+              <div class="meta-value" id="taskAssignee">Unassigned</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Created</div>
+              <div class="meta-value" id="taskCreated">Just now</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Last Updated</div>
+              <div class="meta-value" id="taskUpdated">Just now</div>
+            </div>
+          </div>
+          
+          <div class="task-description">
+            <div class="section-title">Description</div>
+            <div class="description-text" id="taskDescription">
+              Edit or move this task to see how Pick Task works. You can assign this task to team members, change its status, and add comments.
+            </div>
+            <textarea id="taskDescriptionEdit" style="display: none;"></textarea>
+          </div>
+          
+          <div style="display: flex; gap: 10px;">
+            <button class="btn" id="editDescBtn">Edit Description</button>
+            <button class="btn primary" id="saveDescBtn" style="display: none;">Save Description</button>
+            <button class="btn" id="cancelDescBtn" style="display: none;">Cancel</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">Activity</div>
+          <ul class="activity-list" id="taskActivity">
+            <li class="activity-item">
+              <div class="activity-icon">➕</div>
+              <div class="activity-content">
+                <div class="activity-title">Task created</div>
+                <div class="activity-desc">This task was added to the board</div>
+                <div class="activity-time">Just now</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="task-sidebar">
+        <div class="sidebar-card">
+          <div class="section-title">Assignee</div>
+          <div class="assignee-selector">
+            <div class="assignee-avatar" id="assigneeAvatar">?</div>
+            <select id="assigneeSelect">
+              <option value="">Unassigned</option>
+              <!-- Options will be populated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="section-title">Status</div>
+          <div class="status-selector">
+            <div class="status-option active" data-status="todo">To Do</div>
+            <div class="status-option" data-status="inprogress">In Progress</div>
+            <div class="status-option" data-status="review">Review</div>
+            <div class="status-option" data-status="done">Done</div>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="section-title">Actions</div>
+          <div class="action-buttons">
+            <button class="btn primary" id="saveTaskBtn">Save Changes</button>
+            <button class="btn" id="moveTaskBtn">Move to Another Column</button>
+            <button class="btn" style="background: rgba(248, 113, 113, 0.1); color: var(--danger);" id="deleteTaskBtn">Delete Task</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Pick Task — Demo MVP. Replace client-side auth with real backend for production.
+    </footer>
+  </div>
+
+  <div class="notification" id="notification">
+    <div>✅</div>
+    <div id="notification-text">Operation completed successfully</div>
+  </div>
+
+  <script>
+    // API Stub for localStorage operations
+    const apiStub = {
+      getData: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_data') || '{}');
+        } catch (e) {
+          console.error('Error reading from localStorage:', e);
+          return {};
+        }
+      },
+      
+      setData: (data) => {
+        try {
+          localStorage.setItem('picktask_data', JSON.stringify(data));
+          return true;
+        } catch (e) {
+          console.error('Error writing to localStorage:', e);
+          return false;
+        }
+      },
+      
+      getSession: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_session') || '{}');
+        } catch (e) {
+          console.error('Error reading session from localStorage:', e);
+          return {};
+        }
+      },
+      
+      clearSession: () => {
+        try {
+          localStorage.removeItem('picktask_session');
+          return true;
+        } catch (e) {
+          console.error('Error clearing session:', e);
+          return false;
+        }
+      }
+    };
+
+    // Check authentication
+    function checkAuth() {
+      const session = apiStub.getSession();
+      if (!session || !session.logged) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    }
+
+    // Show notification
+    function showNotification(message, isError = false) {
+      const notification = document.getElementById('notification');
+      const textEl = document.getElementById('notification-text');
+      
+      textEl.textContent = message;
+      
+      if (isError) {
+        notification.style.background = 'var(--danger)';
+        notification.querySelector('div:first-child').textContent = '❌';
+      } else {
+        notification.style.background = '';
+        notification.querySelector('div:first-child').textContent = '✅';
+      }
+      
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Get task ID from URL parameters
+    function getTaskIdFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('id');
+    }
+
+    // Load task data
+    function loadTaskData() {
+      const taskId = getTaskIdFromURL();
+      if (!taskId) {
+        showNotification('No task specified', true);
+        return null;
+      }
+
+      const data = apiStub.getData();
+      const task = data.tasks ? data.tasks.find(t => t.id === taskId) : null;
+      
+      if (!task) {
+        showNotification('Task not found', true);
+        return null;
+      }
+
+      return task;
+    }
+
+    // Populate task details
+    function populateTaskDetails(task) {
+      // Set task title
+      document.getElementById('taskTitle').value = task.title;
+      
+      // Set task status
+      const statusElement = document.getElementById('taskStatus');
+      let statusText = 'To Do';
+      if (task.colId === 'c2' || task.status === 'inprogress') statusText = 'In Progress';
+      else if (task.colId === 'c3' || task.status === 'review') statusText = 'Review';
+      else if (task.colId === 'c4' || task.status === 'done') statusText = 'Done';
+      statusElement.textContent = statusText;
+      
+      // Set active status option
+      document.querySelectorAll('.status-option').forEach(option => {
+        option.classList.remove('active');
+        if (option.dataset.status === (task.status || 'todo')) {
+          option.classList.add('active');
+        } else if (!task.status && option.dataset.status === 'todo') {
+          option.classList.add('active');
+        }
+      });
+      
+      // Set task assignee
+      const data = apiStub.getData();
+      const assigneeElement = document.getElementById('taskAssignee');
+      const assigneeAvatar = document.getElementById('assigneeAvatar');
+      
+      if (task.assignee) {
+        const assignee = data.users ? data.users.find(u => u.id == task.assignee) : null;
+        if (assignee) {
+          assigneeElement.textContent = assignee.name;
+          assigneeAvatar.textContent = assignee.name.charAt(0);
+        } else {
+          assigneeElement.textContent = 'Unknown';
+          assigneeAvatar.textContent = '?';
+        }
+      } else {
+        assigneeElement.textContent = 'Unassigned';
+        assigneeAvatar.textContent = '?';
+      }
+      
+      // Set task dates
+      document.getElementById('taskCreated').textContent = formatDate(task.created || Date.now());
+      document.getElementById('taskUpdated').textContent = formatDate(task.updated || task.created || Date.now());
+      
+      // Set task description
+      const descriptionElement = document.getElementById('taskDescription');
+      const descriptionEdit = document.getElementById('taskDescriptionEdit');
+      
+      if (task.desc) {
+        descriptionElement.textContent = task.desc;
+        descriptionEdit.value = task.desc;
+      } else {
+        descriptionElement.textContent = 'No description provided.';
+        descriptionEdit.value = '';
+      }
+      
+      // Populate assignee dropdown
+      populateAssigneeDropdown(data.users || []);
+      
+      // Set selected assignee
+      const assigneeSelect = document.getElementById('assigneeSelect');
+      assigneeSelect.value = task.assignee || '';
+      
+      // Load task activity
+      loadTaskActivity(task.id);
+    }
+
+    // Format date for display
+    function formatDate(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diff = now - date;
+      
+      if (diff < 60000) return 'Just now';
+      if (diff < 3600000) return `${Math.floor(diff / 60000)} minutes ago`;
+      if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours ago`;
+      if (diff < 604800000) return `${Math.floor(diff / 86400000)} days ago`;
+      
+      return date.toLocaleDateString();
+    }
+
+    // Populate assignee dropdown
+    function populateAssigneeDropdown(users) {
+      const assigneeSelect = document.getElementById('assigneeSelect');
+      
+      // Clear existing options except the first one
+      while (assigneeSelect.options.length > 1) {
+        assigneeSelect.remove(1);
+      }
+      
+      // Add user options
+      users.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user.id;
+        option.textContent = user.name;
+        assigneeSelect.appendChild(option);
+      });
+    }
+
+    // Load task activity
+    function loadTaskActivity(taskId) {
+      const data = apiStub.getData();
+      const activityList = document.getElementById('taskActivity');
+      
+      // Clear existing activities
+      activityList.innerHTML = '';
+      
+      // Filter activities for this task
+      const taskActivities = data.activities ? 
+        data.activities.filter(activity => 
+          activity.msg.toLowerCase().includes('task') && 
+          activity.msg.toLowerCase().includes(taskId)
+        ) : [];
+      
+      // Add default activity if none found
+      if (taskActivities.length === 0) {
+        activityList.innerHTML = `
+          <li class="activity-item">
+            <div class="activity-icon">➕</div>
+            <div class="activity-content">
+              <div class="activity-title">Task created</div>
+              <div class="activity-desc">This task was added to the board</div>
+              <div class="activity-time">Just now</div>
+            </div>
+          </li>
+        `;
+        return;
+      }
+      
+      // Display task activities
+      taskActivities.slice(0, 10).forEach(activity => {
+        const li = document.createElement('li');
+        li.className = 'activity-item';
+        
+        // Determine icon based on activity type
+        let icon = '•';
+        if (activity.msg.includes('created') || activity.msg.includes('added')) icon = '➕';
+        else if (activity.msg.includes('moved')) icon = '➡️';
+        else if (activity.msg.includes('assigned')) icon = '👤';
+        else if (activity.msg.includes('completed') || activity.msg.includes('done')) icon = '✅';
+        else if (activity.msg.includes('updated')) icon = '✏️';
+        
+        li.innerHTML = `
+          <div class="activity-icon">${icon}</div>
+          <div class="activity-content">
+            <div class="activity-title">${activity.msg}</div>
+            <div class="activity-time">${formatDate(activity.ts)}</div>
+          </div>
+        `;
+        
+        activityList.appendChild(li);
+      });
+    }
+
+    // Save task changes
+    function saveTaskChanges() {
+      const taskId = getTaskIdFromURL();
+      if (!taskId) return;
+      
+      const data = apiStub.getData();
+      const taskIndex = data.tasks ? data.tasks.findIndex(t => t.id === taskId) : -1;
+      
+      if (taskIndex === -1) {
+        showNotification('Task not found', true);
+        return;
+      }
+      
+      // Get updated values
+      const title = document.getElementById('taskTitle').value;
+      const description = document.getElementById('taskDescriptionEdit').value;
+      const assignee = document.getElementById('assigneeSelect').value;
+      const status = document.querySelector('.status-option.active').dataset.status;
+      
+      // Update task
+      data.tasks[taskIndex].title = title;
+      data.tasks[taskIndex].desc = description;
+      data.tasks[taskIndex].assignee = assignee || null;
+      data.tasks[taskIndex].status = status;
+      data.tasks[taskIndex].updated = Date.now();
+      
+      // Update column based on status
+      if (status === 'todo') data.tasks[taskIndex].colId = 'c1';
+      else if (status === 'inprogress') data.tasks[taskIndex].colId = 'c2';
+      else if (status === 'review') data.tasks[taskIndex].colId = 'c3';
+      else if (status === 'done') data.tasks[taskIndex].colId = 'c4';
+      
+      // Save data
+      if (apiStub.setData(data)) {
+        // Log activity
+        logActivity(`Task "${title}" updated`);
+        
+        // Update UI
+        populateTaskDetails(data.tasks[taskIndex]);
+        
+        // Reset edit mode
+        toggleEditMode(false);
+        
+        showNotification('Task updated successfully');
+      } else {
+        showNotification('Error updating task', true);
+      }
+    }
+
+    // Delete task
+    function deleteTask() {
+      if (!confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+        return;
+      }
+      
+      const taskId = getTaskIdFromURL();
+      if (!taskId) return;
+      
+      const data = apiStub.getData();
+      const taskIndex = data.tasks ? data.tasks.findIndex(t => t.id === taskId) : -1;
+      
+      if (taskIndex === -1) {
+        showNotification('Task not found', true);
+        return;
+      }
+      
+      const taskTitle = data.tasks[taskIndex].title;
+      
+      // Remove task
+      data.tasks.splice(taskIndex, 1);
+      
+      // Save data
+      if (apiStub.setData(data)) {
+        // Log activity
+        logActivity(`Task "${taskTitle}" deleted`);
+        
+        showNotification('Task deleted successfully');
+        
+        // Redirect to kanban board
+        setTimeout(() => {
+          window.location.href = 'kanban.html';
+        }, 1000);
+      } else {
+        showNotification('Error deleting task', true);
+      }
+    }
+
+    // Toggle edit mode
+    function toggleEditMode(enable) {
+      const titleInput = document.getElementById('taskTitle');
+      const editTitleBtn = document.getElementById('editTitleBtn');
+      const descriptionElement = document.getElementById('taskDescription');
+      const descriptionEdit = document.getElementById('taskDescriptionEdit');
+      const editDescBtn = document.getElementById('editDescBtn');
+      const saveDescBtn = document.getElementById('saveDescBtn');
+      const cancelDescBtn = document.getElementById('cancelDescBtn');
+      
+      if (enable) {
+        titleInput.readOnly = false;
+        editTitleBtn.textContent = 'Cancel Edit';
+        descriptionElement.style.display = 'none';
+        descriptionEdit.style.display = 'block';
+        editDescBtn.style.display = 'none';
+        saveDescBtn.style.display = 'block';
+        cancelDescBtn.style.display = 'block';
+      } else {
+        titleInput.readOnly = true;
+        editTitleBtn.textContent = '✏️ Edit';
+        descriptionElement.style.display = 'block';
+        descriptionEdit.style.display = 'none';
+        editDescBtn.style.display = 'block';
+        saveDescBtn.style.display = 'none';
+        cancelDescBtn.style.display = 'none';
+        
+        // Reset description to saved value
+        const task = loadTaskData();
+        if (task) {
+          descriptionEdit.value = task.desc || '';
+          descriptionElement.textContent = task.desc || 'No description provided.';
+        }
+      }
+    }
+
+    // Log activity
+    function logActivity(message) {
+      const data = apiStub.getData();
+      if (!data.activities) data.activities = [];
+      
+      data.activities.unshift({
+        ts: Date.now(),
+        msg: message
+      });
+      
+      apiStub.setData(data);
+    }
+
+    // Initialize the task page
+    function initTaskPage() {
+      if (!checkAuth()) return;
+      
+      // Load task data
+      const task = loadTaskData();
+      if (!task) return;
+      
+      // Populate task details
+      populateTaskDetails(task);
+      
+      // Set up event listeners
+      document.getElementById('editTitleBtn').addEventListener('click', () => {
+        const titleInput = document.getElementById('taskTitle');
+        if (titleInput.readOnly) {
+          toggleEditMode(true);
+        } else {
+          toggleEditMode(false);
+        }
+      });
+      
+      document.getElementById('editDescBtn').addEventListener('click', () => {
+        toggleEditMode(true);
+      });
+      
+      document.getElementById('saveDescBtn').addEventListener('click', () => {
+        const description = document.getElementById('taskDescriptionEdit').value;
+        document.getElementById('taskDescription').textContent = description || 'No description provided.';
+        toggleEditMode(false);
+      });
+      
+      document.getElementById('cancelDescBtn').addEventListener('click', () => {
+        toggleEditMode(false);
+      });
+      
+      document.getElementById('saveTaskBtn').addEventListener('click', saveTaskChanges);
+      
+      document.getElementById('deleteTaskBtn').addEventListener('click', deleteTask);
+      
+      document.getElementById('moveTaskBtn').addEventListener('click', () => {
+        alert('This would open a modal to move the task to another column in a real implementation.');
+      });
+      
+      // Status selector
+      document.querySelectorAll('.status-option').forEach(option => {
+        option.addEventListener('click', () => {
+          document.querySelectorAll('.status-option').forEach(opt => {
+            opt.classList.remove('active');
+          });
+          option.classList.add('active');
+        });
+      });
+      <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Details - Pick Task</title>
+  <style>
+    :root {
+      --bg: #0f1724;
+      --card: #0b1220;
+      --muted: #9aa4b2;
+      --accent: #6ee7b7;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --info: #60a5fa;
+      --glass: rgba(255, 255, 255, 0.04);
+      --radius: 14px;
+      --shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+      --maxw: 1100px;
+      --gap: 16px;
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--ff-sans);
+      background: linear-gradient(180deg, #071226 0%, #071727 60%);
+      color: #e6eef6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      padding: 0;
+    }
+
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #05202b;
+    }
+
+    nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      background: var(--glass);
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, #22c1c3, #6ee7b7);
+      color: #042226;
+      border: none;
+    }
+
+    .btn.primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn.back {
+      margin-bottom: 20px;
+      align-self: flex-start;
+    }
+
+    .task-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 24px;
+    }
+
+    .task-main {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .task-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      border: none;
+      background: transparent;
+      color: inherit;
+      width: 100%;
+      padding: 8px 0;
+      font-family: inherit;
+    }
+
+    .task-title:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .meta-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .meta-value {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .task-description {
+      margin-bottom: 24px;
+    }
+
+    .description-text {
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.03);
+      color: inherit;
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .activity-list {
+      list-style: none;
+    }
+
+    .activity-item {
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      gap: 12px;
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .activity-time {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .task-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sidebar-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .assignee-selector {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .assignee-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #05202b;
+      flex-shrink: 0;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.03);
+      color: inherit;
+      font-family: inherit;
+    }
+
+    .status-selector {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .status-option {
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .status-option:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .status-option.active {
+      background: rgba(110, 231, 183, 0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    footer {
+      margin-top: 48px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @media (max-width: 900px) {
+      .task-detail-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .brand {
+        margin-bottom: 16px;
+      }
+      
+      .task-meta {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(-100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .edit-toggle {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .edit-toggle:hover {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">PT</div>
+        <div>
+          <div style="font-weight:700">Pick Task</div>
+          <div style="font-size:12px;color:var(--muted)">Task Details</div>
+        </div>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <a class="btn" href="dashboard.html">Dashboard</a>
+        <a class="btn" href="kanban.html">Kanban</a>
+        <a class="btn" href="team.html">Team</a>
+        <button class="btn" id="logoutBtn">Log out</button>
+      </nav>
+    </header>
+
+    <a href="kanban.html" class="btn back">← Back to Board</a>
+
+    <div class="task-detail-grid">
+      <div class="task-main">
+        <div class="card">
+          <div class="card-header">
+            <input type="text" class="task-title" id="taskTitle" value="Welcome to Pick Task" readonly>
+            <button class="edit-toggle" id="editTitleBtn">✏️ Edit</button>
+          </div>
+          
+          <div class="task-meta">
+            <div class="meta-item">
+              <div class="meta-label">Status</div>
+              <div class="meta-value" id="taskStatus">To Do</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Assignee</div>
+              <div class="meta-value" id="taskAssignee">Unassigned</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Created</div>
+              <div class="meta-value" id="taskCreated">Just now</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Last Updated</div>
+              <div class="meta-value" id="taskUpdated">Just now</div>
+            </div>
+          </div>
+          
+          <div class="task-description">
+            <div class="section-title">Description</div>
+            <div class="description-text" id="taskDescription">
+              Edit or move this task to see how Pick Task works. You can assign this task to team members, change its status, and add comments.
+            </div>
+            <textarea id="taskDescriptionEdit" style="display: none;"></textarea>
+          </div>
+          
+          <div style="display: flex; gap: 10px;">
+            <button class="btn" id="editDescBtn">Edit Description</button>
+            <button class="btn primary" id="saveDescBtn" style="display: none;">Save Description</button>
+            <button class="btn" id="cancelDescBtn" style="display: none;">Cancel</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">Activity</div>
+          <ul class="activity-list" id="taskActivity">
+            <li class="activity-item">
+              <div class="activity-icon">➕</div>
+              <div class="activity-content">
+                <div class="activity-title">Task created</div>
+                <div class="activity-desc">This task was added to the board</div>
+                <div class="activity-time">Just now</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="task-sidebar">
+        <div class="sidebar-card">
+          <div class="section-title">Assignee</div>
+          <div class="assignee-selector">
+            <div class="assignee-avatar" id="assigneeAvatar">?</div>
+            <select id="assigneeSelect">
+              <option value="">Unassigned</option>
+              <!-- Options will be populated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="section-title">Status</div>
+          <div class="status-selector">
+            <div class="status-option active" data-status="todo">To Do</div>
+            <div class="status-option" data-status="inprogress">In Progress</div>
+            <div class="status-option" data-status="review">Review</div>
+            <div class="status-option" data-status="done">Done</div>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="section-title">Actions</div>
+          <div class="action-buttons">
+            <button class="btn primary" id="saveTaskBtn">Save Changes</button>
+            <button class="btn" id="moveTaskBtn">Move to Another Column</button>
+            <button class="btn" style="background: rgba(248, 113, 113, 0.1); color: var(--danger);" id="deleteTaskBtn">Delete Task</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Pick Task — Demo MVP. Replace client-side auth with real backend for production.
+    </footer>
+  </div>
+
+  <div class="notification" id="notification">
+    <div>✅</div>
+    <div id="notification-text">Operation completed successfully</div>
+  </div>
+
+  <script>
+    // API Stub for localStorage operations
+    const apiStub = {
+      getData: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_data') || '{}');
+        } catch (e) {
+          console.error('Error reading from localStorage:', e);
+          return {};
+        }
+      },
+      
+      setData: (data) => {
+        try {
+          localStorage.setItem('picktask_data', JSON.stringify(data));
+          return true;
+        } catch (e) {
+          console.error('Error writing to localStorage:', e);
+          return false;
+        }
+      },
+      
+      getSession: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_session') || '{}');
+        } catch (e) {
+          console.error('Error reading session from localStorage:', e);
+          return {};
+        }
+      },
+      
+      clearSession: () => {
+        try {
+          localStorage.removeItem('picktask_session');
+          return true;
+        } catch (e) {
+          console.error('Error clearing session:', e);
+          return false;
+        }
+      }
+    };
+
+    // Check authentication
+    function checkAuth() {
+      const session = apiStub.getSession();
+      if (!session || !session.logged) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    }
+
+    // Show notification
+    function showNotification(message, isError = false) {
+      const notification = document.getElementById('notification');
+      const textEl = document.getElementById('notification-text');
+      
+      textEl.textContent = message;
+      
+      if (isError) {
+        notification.style.background = 'var(--danger)';
+        notification.querySelector('div:first-child').textContent = '❌';
+      } else {
+        notification.style.background = '';
+        notification.querySelector('div:first-child').textContent = '✅';
+      }
+      
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Get task ID from URL parameters
+    function getTaskIdFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('id');
+    }
+
+    // Load task data
+    function loadTaskData() {
+      const taskId = getTaskIdFromURL();
+      if (!taskId) {
+        showNotification('No task specified', true);
+        return null;
+      }
+
+      const data = apiStub.getData();
+      const task = data.tasks ? data.tasks.find(t => t.id === taskId) : null;
+      
+      if (!task) {
+        showNotification('Task not found', true);
+        return null;
+      }
+
+      return task;
+    }
+
+    // Populate task details
+    function populateTaskDetails(task) {
+      // Set task title
+      document.getElementById('taskTitle').value = task.title;
+      
+      // Set task status
+      const statusElement = document.getElementById('taskStatus');
+      let statusText = 'To Do';
+      if (task.colId === 'c2' || task.status === 'inprogress') statusText = 'In Progress';
+      else if (task.colId === 'c3' || task.status === 'review') statusText = 'Review';
+      else if (task.colId === 'c4' || task.status === 'done') statusText = 'Done';
+      statusElement.textContent = statusText;
+      
+      // Set active status option
+      document.querySelectorAll('.status-option').forEach(option => {
+        option.classList.remove('active');
+        if (option.dataset.status === (task.status || 'todo')) {
+          option.classList.add('active');
+        } else if (!task.status && option.dataset.status === 'todo') {
+          option.classList.add('active');
+        }
+      });
+      
+      // Set task assignee
+      const data = apiStub.getData();
+      const assigneeElement = document.getElementById('taskAssignee');
+      const assigneeAvatar = document.getElementById('assigneeAvatar');
+      
+      if (task.assignee) {
+        const assignee = data.users ? data.users.find(u => u.id == task.assignee) : null;
+        if (assignee) {
+          assigneeElement.textContent = assignee.name;
+          assigneeAvatar.textContent = assignee.name.charAt(0);
+        } else {
+          assigneeElement.textContent = 'Unknown';
+          assigneeAvatar.textContent = '?';
+        }
+      } else {
+        assigneeElement.textContent = 'Unassigned';
+        assigneeAvatar.textContent = '?';
+      }
+      
+      // Set task dates
+      document.getElementById('taskCreated').textContent = formatDate(task.created || Date.now());
+      document.getElementById('taskUpdated').textContent = formatDate(task.updated || task.created || Date.now());
+      
+      // Set task description
+      const descriptionElement = document.getElementById('taskDescription');
+      const descriptionEdit = document.getElementById('taskDescriptionEdit');
+      
+      if (task.desc) {
+        descriptionElement.textContent = task.desc;
+        descriptionEdit.value = task.desc;
+      } else {
+        descriptionElement.textContent = 'No description provided.';
+        descriptionEdit.value = '';
+      }
+      
+      // Populate assignee dropdown
+      populateAssigneeDropdown(data.users || []);
+      
+      // Set selected assignee
+      const assigneeSelect = document.getElementById('assigneeSelect');
+      assigneeSelect.value = task.assignee || '';
+      
+      // Load task activity
+      loadTaskActivity(task.id);
+    }
+
+    // Format date for display
+    function formatDate(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diff = now - date;
+      
+      if (diff < 60000) return 'Just now';
+      if (diff < 3600000) return `${Math.floor(diff / 60000)} minutes ago`;
+      if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours ago`;
+      if (diff < 604800000) return `${Math.floor(diff / 86400000)} days ago`;
+      
+      return date.toLocaleDateString();
+    }
+
+    // Populate assignee dropdown
+    function populateAssigneeDropdown(users) {
+      const assigneeSelect = document.getElementById('assigneeSelect');
+      
+      // Clear existing options except the first one
+      while (assigneeSelect.options.length > 1) {
+        assigneeSelect.remove(1);
+      }
+      
+      // Add user options
+      users.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user.id;
+        option.textContent = user.name;
+        assigneeSelect.appendChild(option);
+      });
+    }
+
+    // Load task activity
+    function loadTaskActivity(taskId) {
+      const data = apiStub.getData();
+      const activityList = document.getElementById('taskActivity');
+      
+      // Clear existing activities
+      activityList.innerHTML = '';
+      
+      // Filter activities for this task
+      const taskActivities = data.activities ? 
+        data.activities.filter(activity => 
+          activity.msg.toLowerCase().includes('task') && 
+          activity.msg.toLowerCase().includes(taskId)
+        ) : [];
+      
+      // Add default activity if none found
+      if (taskActivities.length === 0) {
+        activityList.innerHTML = `
+          <li class="activity-item">
+            <div class="activity-icon">➕</div>
+            <div class="activity-content">
+              <div class="activity-title">Task created</div>
+              <div class="activity-desc">This task was added to the board</div>
+              <div class="activity-time">Just now</div>
+            </div>
+          </li>
+        `;
+        return;
+      }
+      
+      // Display task activities
+      taskActivities.slice(0, 10).forEach(activity => {
+        const li = document.createElement('li');
+        li.className = 'activity-item';
+        
+        // Determine icon based on activity type
+        let icon = '•';
+        if (activity.msg.includes('created') || activity.msg.includes('added')) icon = '➕';
+        else if (activity.msg.includes('moved')) icon = '➡️';
+        else if (activity.msg.includes('assigned')) icon = '👤';
+        else if (activity.msg.includes('completed') || activity.msg.includes('done')) icon = '✅';
+        else if (activity.msg.includes('updated')) icon = '✏️';
+        
+        li.innerHTML = `
+          <div class="activity-icon">${icon}</div>
+          <div class="activity-content">
+            <div class="activity-title">${activity.msg}</div>
+            <div class="activity-time">${formatDate(activity.ts)}</div>
+          </div>
+        `;
+        
+        activityList.appendChild(li);
+      });
+    }
+
+    // Save task changes
+    function saveTaskChanges() {
+      const taskId = getTaskIdFromURL();
+      if (!taskId) return;
+      
+      const data = apiStub.getData();
+      const taskIndex = data.tasks ? data.tasks.findIndex(t => t.id === taskId) : -1;
+      
+      if (taskIndex === -1) {
+        showNotification('Task not found', true);
+        return;
+      }
+      
+      // Get updated values
+      const title = document.getElementById('taskTitle').value;
+      const description = document.getElementById('taskDescriptionEdit').value;
+      const assignee = document.getElementById('assigneeSelect').value;
+      const status = document.querySelector('.status-option.active').dataset.status;
+      
+      // Update task
+      data.tasks[taskIndex].title = title;
+      data.tasks[taskIndex].desc = description;
+      data.tasks[taskIndex].assignee = assignee || null;
+      data.tasks[taskIndex].status = status;
+      data.tasks[taskIndex].updated = Date.now();
+      
+      // Update column based on status
+      if (status === 'todo') data.tasks[taskIndex].colId = 'c1';
+      else if (status === 'inprogress') data.tasks[taskIndex].colId = 'c2';
+      else if (status === 'review') data.tasks[taskIndex].colId = 'c3';
+      else if (status === 'done') data.tasks[taskIndex].colId = 'c4';
+      
+      // Save data
+      if (apiStub.setData(data)) {
+        // Log activity
+        logActivity(`Task "${title}" updated`);
+        
+        // Update UI
+        populateTaskDetails(data.tasks[taskIndex]);
+        
+        // Reset edit mode
+        toggleEditMode(false);
+        
+        showNotification('Task updated successfully');
+      } else {
+        showNotification('Error updating task', true);
+      }
+    }
+
+    // Delete task
+    function deleteTask() {
+      if (!confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+        return;
+      }
+      
+      const taskId = getTaskIdFromURL();
+      if (!taskId) return;
+      
+      const data = apiStub.getData();
+      const taskIndex = data.tasks ? data.tasks.findIndex(t => t.id === taskId) : -1;
+      
+      if (taskIndex === -1) {
+        showNotification('Task not found', true);
+        return;
+      }
+      
+      const taskTitle = data.tasks[taskIndex].title;
+      
+      // Remove task
+      data.tasks.splice(taskIndex, 1);
+      
+      // Save data
+      if (apiStub.setData(data)) {
+        // Log activity
+        logActivity(`Task "${taskTitle}" deleted`);
+        
+        showNotification('Task deleted successfully');
+        
+        // Redirect to kanban board
+        setTimeout(() => {
+          window.location.href = 'kanban.html';
+        }, 1000);
+      } else {
+        showNotification('Error deleting task', true);
+      }
+    }
+
+    // Toggle edit mode
+    function toggleEditMode(enable) {
+      const titleInput = document.getElementById('taskTitle');
+      const editTitleBtn = document.getElementById('editTitleBtn');
+      const descriptionElement = document.getElementById('taskDescription');
+      const descriptionEdit = document.getElementById('taskDescriptionEdit');
+      const editDescBtn = document.getElementById('editDescBtn');
+      const saveDescBtn = document.getElementById('saveDescBtn');
+      const cancelDescBtn = document.getElementById('cancelDescBtn');
+      
+      if (enable) {
+        titleInput.readOnly = false;
+        editTitleBtn.textContent = 'Cancel Edit';
+        descriptionElement.style.display = 'none';
+        descriptionEdit.style.display = 'block';
+        editDescBtn.style.display = 'none';
+        saveDescBtn.style.display = 'block';
+        cancelDescBtn.style.display = 'block';
+      } else {
+        titleInput.readOnly = true;
+        editTitleBtn.textContent = '✏️ Edit';
+        descriptionElement.style.display = 'block';
+        descriptionEdit.style.display = 'none';
+        editDescBtn.style.display = 'block';
+        saveDescBtn.style.display = 'none';
+        cancelDescBtn.style.display = 'none';
+        
+        // Reset description to saved value
+        const task = loadTaskData();
+        if (task) {
+          descriptionEdit.value = task.desc || '';
+          descriptionElement.textContent = task.desc || 'No description provided.';
+        }
+      }
+    }
+
+    // Log activity
+    function logActivity(message) {
+      const data = apiStub.getData();
+      if (!data.activities) data.activities = [];
+      
+      data.activities.unshift({
+        ts: Date.now(),
+        msg: message
+      });
+      
+      apiStub.setData(data);
+    }
+
+    // Initialize the task page
+    function initTaskPage() {
+      if (!checkAuth()) return;
+      
+      // Load task data
+      const task = loadTaskData();
+      if (!task) return;
+      
+      // Populate task details
+      populateTaskDetails(task);
+      
+      // Set up event listeners
+      document.getElementById('editTitleBtn').addEventListener('click', () => {
+        const titleInput = document.getElementById('taskTitle');
+        if (titleInput.readOnly) {
+          toggleEditMode(true);
+        } else {
+          toggleEditMode(false);
+        }
+      });
+      
+      document.getElementById('editDescBtn').addEventListener('click', () => {
+        toggleEditMode(true);
+      });
+      
+      document.getElementById('saveDescBtn').addEventListener('click', () => {
+        const description = document.getElementById('taskDescriptionEdit').value;
+        document.getElementById('taskDescription').textContent = description || 'No description provided.';
+        toggleEditMode(false);
+      });
+      
+      document.getElementById('cancelDescBtn').addEventListener('click', () => {
+        toggleEditMode(false);
+      });
+      
+      document.getElementById('saveTaskBtn').addEventListener('click', saveTaskChanges);
+      
+      document.getElementById('deleteTaskBtn').addEventListener('click', deleteTask);
+      
+      document.getElementById('moveTaskBtn').addEventListener('click', () => {
+        alert('This would open a modal to move the task to another column in a real implementation.');
+      });
+      
+      // Status selector
+      document.querySelectorAll('.status-option').forEach(option => {
+        option.addEventListener('click', () => {
+          document.querySelectorAll('.status-option').forEach(opt => {
+            opt.classList.remove('active');
+          });
+          option.classList.add('active');
+        });
+      });
+      
+      // Set up logout button
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        apiStub.clearSession();
+        window.location.href = 'index.html';
+      });
+    }
+
+    // Run initialization when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initTaskPage);
+  </script>
+</body>
+</html>
+      // Set up logout button
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        apiStub.clearSession();
+        window.location.href = 'index.html';
+      });
+    }
+
+    // Run initialization when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initTaskPage);
+  </script>
+</body>
+</html>

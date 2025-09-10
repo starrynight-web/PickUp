@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity Log - Pick Task</title>
+  <style>
+    :root {
+      --bg: #0f1724;
+      --card: #0b1220;
+      --muted: #9aa4b2;
+      --accent: #6ee7b7;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --info: #60a5fa;
+      --glass: rgba(255, 255, 255, 0.04);
+      --radius: 14px;
+      --shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+      --maxw: 1100px;
+      --gap: 16px;
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--ff-sans);
+      background: linear-gradient(180deg, #071226 0%, #071727 60%);
+      color: #e6eef6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      padding: 0;
+    }
+
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #05202b;
+    }
+
+    nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      background: var(--glass);
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, #22c1c3, #6ee7b7);
+      color: #042226;
+      border: none;
+    }
+
+    .btn.primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn.back {
+      margin-bottom: 20px;
+      align-self: flex-start;
+    }
+
+    .page-title {
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding: 16px;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    select, input {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.03);
+      color: inherit;
+      font-family: inherit;
+    }
+
+    .activity-list {
+      list-style: none;
+    }
+
+    .activity-item {
+      padding: 20px;
+      background: var(--card);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      display: flex;
+      gap: 16px;
+    }
+
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-title {
+      font-weight: 500;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .activity-desc {
+      color: var(--muted);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .activity-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .activity-time {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .activity-type {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .load-more {
+      width: 100%;
+      padding: 16px;
+      background: var(--glass);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .load-more:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-state-title {
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: #e6eef6;
+    }
+
+    footer {
+      margin-top: 48px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @media (max-width: 768px) {
+      .filters {
+        flex-direction: column;
+      }
+      
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .brand {
+        margin-bottom: 16px;
+      }
+      
+      .activity-item {
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .activity-meta {
+        flex-wrap: wrap;
+      }
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(-100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #22c1c3, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">PT</div>
+        <div>
+          <div style="font-weight:700">Pick Task</div>
+          <div style="font-size:12px;color:var(--muted)">Activity Log</div>
+        </div>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <a class="btn" href="dashboard.html">Dashboard</a>
+        <a class="btn" href="kanban.html">Kanban</a>
+        <a class="btn" href="team.html">Team</a>
+        <button class="btn" id="logoutBtn">Log out</button>
+      </nav>
+    </header>
+
+    <a href="dashboard.html" class="btn back">← Back to Dashboard</a>
+
+    <section class="page-title">
+      <h1>Activity Log</h1>
+      <p class="subtitle">Track all activities and changes across your workspace</p>
+    </section>
+
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-value" id="totalActivities">0</div>
+        <div class="stat-label">Total Activities</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="todayActivities">0</div>
+        <div class="stat-label">Today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="taskActivities">0</div>
+        <div class="stat-label">Task Activities</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="userActivities">0</div>
+        <div class="stat-label">User Activities</div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <div class="filter-label">Activity Type</div>
+        <select id="typeFilter">
+          <option value="all">All Activities</option>
+          <option value="task">Task Related</option>
+          <option value="user">User Related</option>
+          <option value="system">System</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">Date Range</div>
+        <select id="dateFilter">
+          <option value="all">All Time</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">User</div>
+        <select id="userFilter">
+          <option value="all">All Users</option>
+          <!-- Options will be populated dynamically -->
+        </select>
+      </div>
+
+      <div class="filter-group" style="justify-content: flex-end;">
+        <button class="btn" id="applyFilters">Apply Filters</button>
+        <button class="btn" id="clearFilters">Clear</button>
+      </div>
+    </div>
+
+    <ul class="activity-list" id="activityList">
+      <!-- Activities will be dynamically populated here -->
+    </ul>
+
+    <button class="load-more" id="loadMoreBtn">
+      <span>Load More Activities</span>
+    </button>
+
+    <footer>
+      Pick Task — Demo MVP. Replace client-side auth with real backend for production.
+    </footer>
+  </div>
+
+  <div class="notification" id="notification">
+    <div>✅</div>
+    <div id="notification-text">Operation completed successfully</div>
+  </div>
+
+  <script>
+    // API Stub for localStorage operations
+    const apiStub = {
+      getData: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_data') || '{}');
+        } catch (e) {
+          console.error('Error reading from localStorage:', e);
+          return {};
+        }
+      },
+      
+      setData: (data) => {
+        try {
+          localStorage.setItem('picktask_data', JSON.stringify(data));
+          return true;
+        } catch (e) {
+          console.error('Error writing to localStorage:', e);
+          return false;
+        }
+      },
+      
+      getSession: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_session') || '{}');
+        } catch (e) {
+          console.error('Error reading session from localStorage:', e);
+          return {};
+        }
+      },
+      
+      clearSession: () => {
+        try {
+          localStorage.removeItem('picktask_session');
+          return true;
+        } catch (e) {
+          console.error('Error clearing session:', e);
+          return false;
+        }
+      }
+    };
+
+    // Check authentication
+    function checkAuth() {
+      const session = apiStub.getSession();
+      if (!session || !session.logged) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    }
+
+    // Show notification
+    function showNotification(message, isError = false) {
+      const notification = document.getElementById('notification');
+      const textEl = document.getElementById('notification-text');
+      
+      textEl.textContent = message;
+      
+      if (isError) {
+        notification.style.background = 'var(--danger)';
+        notification.querySelector('div:first-child').textContent = '❌';
+      } else {
+        notification.style.background = '';
+        notification.querySelector('div:first-child').textContent = '✅';
+      }
+      
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Format date for display
+    function formatDate(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diff = now - date;
+      
+      if (diff < 60000) return 'Just now';
+      if (diff < 3600000) return `${Math.floor(diff / 60000)} minutes ago`;
+      if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours ago`;
+      if (diff < 604800000) return `${Math.floor(diff / 86400000)} days ago`;
+      
+      return date.toLocaleDateString();
+    }
+
+    // Format date for detailed view
+    function formatDateDetailed(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleString();
+    }
+
+    // Get activity type from message
+    function getActivityType(message) {
+      if (message.includes('task') || message.includes('Task')) return 'task';
+      if (message.includes('user') || message.includes('User') || 
+          message.includes('member') || message.includes('Member')) return 'user';
+      if (message.includes('login') || message.includes('signed')) return 'system';
+      return 'system';
+    }
+
+    // Get activity icon based on type and content
+    function getActivityIcon(message) {
+      if (message.includes('created') || message.includes('added')) return '➕';
+      if (message.includes('moved') || message.includes('transferred')) return '➡️';
+      if (message.includes('assigned')) return '👤';
+      if (message.includes('completed') || message.includes('done')) return '✅';
+      if (message.includes('updated') || message.includes('edited')) return '✏️';
+      if (message.includes('deleted') || message.includes('removed')) return '🗑️';
+      if (message.includes('signed in') || message.includes('login')) return '🔐';
+      return '📋';
+    }
+
+    // Populate user filter dropdown
+    function populateUserFilter(users) {
+      const userFilter = document.getElementById('userFilter');
+      
+      // Clear existing options except the first one
+      while (userFilter.options.length > 1) {
+        userFilter.remove(1);
+      }
+      
+      // Add user options
+      if (users && users.length) {
+        users.forEach(user => {
+          const option = document.createElement('option');
+          option.value = user.id;
+          option.textContent = user.name;
+          userFilter.appendChild(option);
+        });
+      }
+    }
+
+    // Calculate activity statistics
+    function calculateStats(activities) {
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      const totalActivities = activities.length;
+      const todayActivities = activities.filter(a => a.ts >= todayStart.getTime()).length;
+      const taskActivities = activities.filter(a => getActivityType(a.msg) === 'task').length;
+      const userActivities = activities.filter(a => getActivityType(a.msg) === 'user').length;
+      
+      document.getElementById('totalActivities').textContent = totalActivities;
+      document.getElementById('todayActivities').textContent = todayActivities;
+      document.getElementById('taskActivities').textContent = taskActivities;
+      document.getElementById('userActivities').textContent = userActivities;
+    }
+
+    // Filter activities based on selected filters
+    function filterActivities(activities) {
+      const typeFilter = document.getElementById('typeFilter').value;
+      const dateFilter = document.getElementById('dateFilter').value;
+      const userFilter = document.getElementById('userFilter').value;
+      
+      const now = new Date();
+      let filteredActivities = [...activities];
+      
+      // Apply type filter
+      if (typeFilter !== 'all') {
+        filteredActivities = filteredActivities.filter(a => getActivityType(a.msg) === typeFilter);
+      }
+      
+      // Apply date filter
+      if (dateFilter !== 'all') {
+        const startDate = new Date();
+        
+        if (dateFilter === 'today') {
+          startDate.setHours(0, 0, 0, 0);
+        } else if (dateFilter === 'week') {
+          startDate.setDate(startDate.getDate() - 7);
+        } else if (dateFilter === 'month') {
+          startDate.setMonth(startDate.getMonth() - 1);
+        }
+        
+        filteredActivities = filteredActivities.filter(a => a.ts >= startDate.getTime());
+      }
+      
+      // Apply user filter (simplified - in a real app, we'd track which user performed each activity)
+      if (userFilter !== 'all') {
+        const user = apiStub.getData().users.find(u => u.id === userFilter);
+        if (user) {
+          filteredActivities = filteredActivities.filter(a => 
+            a.msg.toLowerCase().includes(user.name.toLowerCase()) ||
+            a.msg.toLowerCase().includes(user.username.toLowerCase())
+          );
+        }
+      }
+      
+      return filteredActivities;
+    }
+
+    // Pagination state for activities
+    let activityPage = 1;
+    const ACTIVITIES_PER_PAGE = 10;
+
+    function loadActivities(resetPage = false) {
+      const data = apiStub.getData();
+      const activityList = document.getElementById('activityList');
+
+      // Get activities or use empty array
+      const activities = data.activities || [];
+
+      // Calculate and display stats
+      calculateStats(activities);
+
+      // Populate user filter
+      populateUserFilter(data.users || []);
+
+      // Apply filters
+      const filteredActivities = filterActivities(activities);
+
+      // Reset page if needed
+      if (resetPage) activityPage = 1;
+
+      // Calculate which activities to show
+      const startIdx = 0;
+      const endIdx = activityPage * ACTIVITIES_PER_PAGE;
+      const visibleActivities = filteredActivities.slice(startIdx, endIdx);
+
+      // Clear existing activities
+      activityList.innerHTML = '';
+
+      // Display activities or empty state
+      if (visibleActivities.length === 0) {
+        activityList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📊</div>
+            <div class="empty-state-title">No activities found</div>
+            <div>Try adjusting your filters or create some activities in other sections of the app.</div>
+          </div>
+        `;
+        document.getElementById('loadMoreBtn').style.display = 'none';
+        return;
+      }
+
+      // Display paginated activities
+      visibleActivities.forEach(activity => {
+        const li = document.createElement('li');
+        li.className = 'activity-item';
+
+        const icon = getActivityIcon(activity.msg);
+        const type = getActivityType(activity.msg);
+        const formattedTime = formatDate(activity.ts);
+        const detailedTime = formatDateDetailed(activity.ts);
+
+        li.innerHTML = `
+          <div class="activity-icon">${icon}</div>
+          <div class="activity-content">
+            <div class="activity-title">
+              <span>${activity.msg}</span>
+              <div class="activity-type">${type}</div>
+            </div>
+            <div class="activity-meta">
+              <div class="activity-time" title="${detailedTime}">🕒 ${formattedTime}</div>
+            </div>
+          </div>
+        `;
+
+        activityList.appendChild(li);
+      });
+
+      // Show or hide load more button
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      if (filteredActivities.length > visibleActivities.length) {
+        loadMoreBtn.style.display = 'flex';
+      } else {
+        loadMoreBtn.style.display = 'none';
+      }
+    }
+
+    // Initialize the activity page
+    function initActivityPage() {
+      if (!checkAuth()) return;
+
+      // Load and render activities
+      loadActivities(true);
+
+      // Set up event listeners
+      document.getElementById('applyFilters').addEventListener('click', () => loadActivities(true));
+
+      document.getElementById('clearFilters').addEventListener('click', () => {
+        document.getElementById('typeFilter').value = 'all';
+        document.getElementById('dateFilter').value = 'all';
+        document.getElementById('userFilter').value = 'all';
+        loadActivities(true);
+      });
+
+      document.getElementById('loadMoreBtn').addEventListener('click', () => {
+        activityPage++;
+        loadActivities();
+      });
+
+      // Set up logout button
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        apiStub.clearSession();
+        window.location.href = 'index.html';
+      });
+    }
+
+    // Run initialization when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initActivityPage);
+  </script>
+</body>
+</html>

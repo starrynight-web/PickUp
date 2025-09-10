@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Management - Pick Task</title>
+  <style>
+    :root {
+      --bg: #0f1724;
+      --card: #0b1220;
+      --muted: #9aa4b2;
+      --accent: #6ee7b7;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --info: #60a5fa;
+      --glass: rgba(255, 255, 255, 0.04);
+      --radius: 14px;
+      --shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+      --maxw: 1100px;
+      --gap: 16px;
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--ff-sans);
+      background: linear-gradient(180deg, #071226 0%, #071727 60%);
+      color: #e6eef6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      padding: 0;
+    }
+
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #05202b;
+    }
+
+    nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      background: var(--glass);
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, #22c1c3, #6ee7b7);
+      color: #042226;
+      border: none;
+    }
+
+    .btn.primary:hover {
+      opacity: 0.9;
+    }
+
+    .page-title {
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .member-list {
+      list-style: none;
+    }
+
+    .member-item {
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .member-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .member-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #05202b;
+    }
+
+    .member-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .member-name {
+      font-weight: 500;
+    }
+
+    .member-role {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .member-stats {
+      display: flex;
+      gap: 12px;
+    }
+
+    .stat {
+      background: var(--glass);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .task-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .task-item {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .task-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .task-status {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
+    .task-status.todo {
+      background: var(--info);
+    }
+
+    .task-status.inprogress {
+      background: var(--warning);
+    }
+
+    .task-status.done {
+      background: var(--accent);
+    }
+
+    .task-title {
+      font-size: 14px;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .task-action {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .task-action:hover {
+      color: #fff;
+    }
+
+    .add-member-btn {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+      padding: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .add-member-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
+
+    footer {
+      margin-top: 48px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @media (max-width: 768px) {
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .brand {
+        margin-bottom: 16px;
+      }
+      
+      .member-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      
+      .member-stats {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      visibility: hidden;
+      pointer-events: none;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .modal.show {
+      visibility: visible;
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    .modal-panel {
+      width: 100%;
+      max-width: 500px;
+      background: linear-gradient(180deg, #071826, #081226);
+      padding: 24px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: var(--shadow);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    input[type=text], input[type=email], select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.03);
+      color: inherit;
+      font-family: inherit;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(-100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .role-badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .role-admin {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+
+    .role-member {
+      background: rgba(96, 165, 250, 0.2);
+      color: #60a5fa;
+    }
+
+    .role-guest {
+      background: rgba(156, 163, 175, 0.2);
+      color: #9ca3af;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">PT</div>
+        <div>
+          <div style="font-weight:700">Pick Task</div>
+          <div style="font-size:12px;color:var(--muted)">Team Management</div>
+        </div>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <a class="btn" href="dashboard.html">Dashboard</a>
+        <a class="btn" href="kanban.html">Kanban</a>
+        <a class="btn" href="memo.html">Voice Memo</a>
+        <button class="btn" id="logoutBtn">Log out</button>
+      </nav>
+    </header>
+
+    <section class="page-title">
+      <h1>Team Management</h1>
+      <p class="subtitle">Manage your team members and their assigned tasks</p>
+    </section>
+
+    <div class="team-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Team Members</div>
+          <button class="btn" id="inviteBtn">Invite</button>
+        </div>
+        
+        <ul class="member-list" id="memberList">
+          <!-- Team members will be dynamically populated here -->
+        </ul>
+        
+        <button class="add-member-btn" id="addMemberBtn">
+          <span>+</span> Add Team Member
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Assigned Tasks</div>
+          <a class="btn" href="kanban.html">View All</a>
+        </div>
+        
+        <div id="assignedTasks">
+          <!-- Assigned tasks will be dynamically populated here -->
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Pick Task — Demo MVP. Replace client-side auth with real backend for production.
+    </footer>
+  </div>
+
+  <!-- Add Member Modal -->
+  <div class="modal" id="addMemberModal">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div class="modal-title">Add Team Member</div>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="addMemberForm">
+        <div class="form-group">
+          <label for="memberName">Full Name</label>
+          <input type="text" id="memberName" required placeholder="e.g., John Smith">
+        </div>
+        <div class="form-group">
+          <label for="memberEmail">Email Address</label>
+          <input type="email" id="memberEmail" required placeholder="e.g., john@example.com">
+        </div>
+        <div class="form-group">
+          <label for="memberRole">Role</label>
+          <select id="memberRole" required>
+            <option value="member">Team Member</option>
+            <option value="admin">Administrator</option>
+            <option value="guest">Guest</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn" id="cancelAddMember">Cancel</button>
+          <button type="submit" class="btn primary">Add Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Invite Modal -->
+  <div class="modal" id="inviteModal">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div class="modal-title">Invite to Team</div>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="inviteForm">
+        <div class="form-group">
+          <label for="inviteEmail">Email Address</label>
+          <input type="email" id="inviteEmail" required placeholder="e.g., colleague@example.com">
+        </div>
+        <div class="form-group">
+          <label for="inviteRole">Role</label>
+          <select id="inviteRole" required>
+            <option value="member">Team Member</option>
+            <option value="admin">Administrator</option>
+            <option value="guest">Guest</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn" id="cancelInvite">Cancel</button>
+          <button type="submit" class="btn primary">Send Invitation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="notification" id="notification">
+    <div>✅</div>
+    <div id="notification-text">Operation completed successfully</div>
+  </div>
+
+  <script>
+    // API Stub for localStorage operations
+    const apiStub = {
+      getData: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_data') || '{}');
+        } catch (e) {
+          console.error('Error reading from localStorage:', e);
+          return {};
+        }
+      },
+      
+      setData: (data) => {
+        try {
+          localStorage.setItem('picktask_data', JSON.stringify(data));
+          return true;
+        } catch (e) {
+          console.error('Error writing to localStorage:', e);
+          return false;
+        }
+      },
+      
+      getSession: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_session') || '{}');
+        } catch (e) {
+          console.error('Error reading session from localStorage:', e);
+          return {};
+        }
+      },
+      
+      clearSession: () => {
+        try {
+          localStorage.removeItem('picktask_session');
+          return true;
+        } catch (e) {
+          console.error('Error clearing session:', e);
+          return false;
+        }
+      }
+    };
+
+    // Check authentication
+    function checkAuth() {
+      const session = apiStub.getSession();
+      if (!session || !session.logged) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    }
+
+    // Show notification
+    function showNotification(message, isError = false) {
+      const notification = document.getElementById('notification');
+      const textEl = document.getElementById('notification-text');
+      
+      textEl.textContent = message;
+      
+      if (isError) {
+        notification.style.background = 'var(--danger)';
+        notification.querySelector('div:first-child').textContent = '❌';
+      } else {
+        notification.style.background = '';
+        notification.querySelector('div:first-child').textContent = '✅';
+      }
+      
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Modal handling functions
+    function setupModals() {
+      // Close modals when clicking on X or cancel buttons
+      document.querySelectorAll('.close-modal, #cancelAddMember, #cancelInvite').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.modal').forEach(modal => {
+            modal.classList.remove('show');
+          });
+        });
+      });
+
+      // Add member form submission
+      document.getElementById('addMemberForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const memberName = document.getElementById('memberName').value.trim();
+        const memberEmail = document.getElementById('memberEmail').value.trim();
+        const memberRole = document.getElementById('memberRole').value;
+        
+        if (memberName && memberEmail) {
+          addTeamMember(memberName, memberEmail, memberRole);
+          document.getElementById('addMemberModal').classList.remove('show');
+          document.getElementById('addMemberForm').reset();
+        }
+      });
+
+      // Invite form submission
+      document.getElementById('inviteForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const inviteEmail = document.getElementById('inviteEmail').value.trim();
+        const inviteRole = document.getElementById('inviteRole').value;
+        
+        if (inviteEmail) {
+          sendInvitation(inviteEmail, inviteRole);
+          document.getElementById('inviteModal').classList.remove('show');
+          document.getElementById('inviteForm').reset();
+        }
+      });
+
+      // Open add member modal
+      document.getElementById('addMemberBtn').addEventListener('click', () => {
+        document.getElementById('addMemberModal').classList.add('show');
+        document.getElementById('memberName').focus();
+      });
+
+      // Open invite modal
+      document.getElementById('inviteBtn').addEventListener('click', () => {
+        document.getElementById('inviteModal').classList.add('show');
+        document.getElementById('inviteEmail').focus();
+      });
+    }
+
+    // Load and render team data
+    function loadTeamData() {
+      const data = apiStub.getData();
+      const memberList = document.getElementById('memberList');
+      memberList.innerHTML = '';
+
+      // Render team members
+      if (data.users && data.users.length) {
+        data.users.forEach(user => {
+          const memberEl = createMemberElement(user);
+          memberList.appendChild(memberEl);
+        });
+      } else {
+        memberList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">👥</div>
+            <div>No team members yet</div>
+            <div style="font-size: 13px; margin-top: 8px;">Add your first team member to get started</div>
+          </div>
+        `;
+      }
+
+      // Load assigned tasks
+      loadAssignedTasks(data);
+    }
+
+    // Create a member element
+    function createMemberElement(user) {
+      const li = document.createElement('li');
+      li.className = 'member-item';
+      
+      // Get role class and display text
+      let roleClass = 'role-member';
+      let roleText = 'Member';
+      
+      if (user.role === 'admin') {
+        roleClass = 'role-admin';
+        roleText = 'Admin';
+      } else if (user.role === 'guest') {
+        roleClass = 'role-guest';
+        roleText = 'Guest';
+      }
+      
+      // Count tasks assigned to this user
+      const data = apiStub.getData();
+      const assignedTasks = data.tasks ? data.tasks.filter(task => task.assignee == user.id).length : 0;
+      const completedTasks = data.tasks ? data.tasks.filter(task => 
+        task.assignee == user.id && (task.colId === 'c4' || task.status === 'done' || task.status === 'completed')
+      ).length : 0;
+      
+      li.innerHTML = `
+        <div class="member-info">
+          <div class="member-avatar">${user.name.charAt(0)}</div>
+          <div class="member-details">
+            <div class="member-name">${user.name}</div>
+            <div class="member-role">${user.username || user.email || 'No email'}</div>
+          </div>
+        </div>
+        <div class="member-stats">
+          <div class="stat">
+            <div class="stat-value">${assignedTasks}</div>
+            <div class="stat-label">Tasks</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">${completedTasks}</div>
+            <div class="stat-label">Done</div>
+          </div>
+          <div class="role-badge ${roleClass}">${roleText}</div>
+        </div>
+      `;
+      
+      return li;
+    }
+
+    // Load assigned tasks
+    function loadAssignedTasks(data) {
+      const assignedTasksEl = document.getElementById('assignedTasks');
+      
+      if (data.tasks && data.tasks.length) {
+        // Filter tasks that are assigned to someone
+        const assignedTasks = data.tasks.filter(task => task.assignee);
+        
+        if (assignedTasks.length) {
+          const ul = document.createElement('ul');
+          ul.className = 'task-list';
+          
+          assignedTasks.slice(0, 5).forEach(task => {
+            const assignee = data.users.find(user => user.id == task.assignee);
+            const assigneeName = assignee ? assignee.name : 'Unknown';
+            
+            // Determine status class
+            let statusClass = 'task-status';
+            if (task.colId === 'c1' || task.status === 'todo') statusClass += ' todo';
+            else if (task.colId === 'c2' || task.status === 'inprogress') statusClass += ' inprogress';
+            else if (task.colId === 'c4' || task.status === 'done' || task.status === 'completed') statusClass += ' done';
+            
+            const li = document.createElement('li');
+            li.className = 'task-item';
+            li.innerHTML = `
+              <div class="task-info">
+                <div class="${statusClass}"></div>
+                <div class="task-title">${task.title}</div>
+              </div>
+              <div class="task-actions">
+                <span style="font-size: 12px; color: var(--muted);">${assigneeName}</span>
+              </div>
+            `;
+            
+            ul.appendChild(li);
+          });
+          
+          assignedTasksEl.innerHTML = '';
+          assignedTasksEl.appendChild(ul);
+          
+          // Show "View All" if there are more tasks
+          if (assignedTasks.length > 5) {
+            const viewAll = document.createElement('div');
+            viewAll.style.textAlign = 'center';
+            viewAll.style.marginTop = '16px';
+            viewAll.innerHTML = `<a href="kanban.html" class="btn" style="font-size: 13px;">View All Tasks</a>`;
+            assignedTasksEl.appendChild(viewAll);
+          }
+        } else {
+          assignedTasksEl.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <div>No assigned tasks</div>
+              <div style="font-size: 13px; margin-top: 8px;">Assign tasks to team members in the Kanban board</div>
+            </div>
+          `;
+        }
+      } else {
+        assignedTasksEl.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <div>No tasks yet</div>
+            <div style="font-size: 13px; margin-top: 8px;">Create your first task to get started</div>
+          </div>
+        `;
+      }
+    }
+
+    // Add a new team member
+    function addTeamMember(name, email, role) {
+      const data = apiStub.getData();
+      if (!data.users) data.users = [];
+      
+      // Check if user already exists
+      const existingUser = data.users.find(user => 
+        user.email === email || user.username === email
+      );
+      
+      if (existingUser) {
+        showNotification('A user with this email already exists', true);
+        return;
+      }
+      
+      const newMember = {
+        id: 'u' + (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)),
+        name: name,
+        email: email,
+        username: email,
+        role: role
+      };
+      
+      data.users.push(newMember);
+      
+      if (apiStub.setData(data)) {
+        loadTeamData();
+        
+        // Log activity
+        logActivity(`Team member "${name}" added`);
+        showNotification(`Team member "${name}" added successfully`);
+      } else {
+        showNotification('Error adding team member', true);
+      }
+    }
+
+    // Send invitation (demo version)
+    function sendInvitation(email, role) {
+      // In a real app, this would send an email invitation
+      // For demo purposes, we'll just show a notification
+      showNotification(`Invitation sent to ${email}`);
+      
+      // Log activity
+      logActivity(`Invitation sent to ${email} with ${role} role`);
+    }
+
+    // Log activity
+    function logActivity(message) {
+      const data = apiStub.getData();
+      if (!data.activities) data.activities = [];
+      
+      data.activities.unshift({
+        ts: Date.now(),
+        msg: message
+      });
+      
+      apiStub.setData(data);
+    }
+
+    // Initialize the team page
+    function initTeamPage() {
+      if (!checkAuth()) return;
+      
+      // Load and render the team data
+      loadTeamData();
+      
+      // Set up event listeners
+      setupModals();
+      
+      // Set up logout button
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        apiStub.clearSession();
+        window.location.href = 'index.html';
+      });
+    }
+
+    // Run initialization when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initTeamPage);
+  </script>
+</body>
+</html>

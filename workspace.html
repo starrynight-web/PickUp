@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workspaces - Pick Task</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --accent: #3b82f6;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --border: #334155;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--ff-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 16px;
+    }
+
+    .workspace-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .workspace-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    .workspace-card.current {
+      border-color: var(--accent);
+      background-color: rgba(59, 130, 246, 0.05);
+    }
+
+    .workspace-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .workspace-name {
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .workspace-desc {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .workspace-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .workspace-meta div {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .badge-primary {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--accent);
+    }
+
+    .badge-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .badge-warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+
+    button {
+      padding: 10px 16px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-family: inherit;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button.secondary {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .alert-error {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="dashboard.html" class="brand">
+        <div class="logo">PT</div>
+        <span style="font-weight: 700;">Pick Task</span>
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="team.html">Team</a>
+        <a href="workspace.html" style="color: var(--accent);">Workspace</a>
+      </div>
+    </header>
+
+    <h1>Workspaces</h1>
+    <p class="subtitle">Manage your workspaces and switch between them</p>
+
+    <div id="alertContainer"></div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Your Workspaces</h2>
+        <button id="createWorkspaceBtn">Create Workspace</button>
+      </div>
+      
+      <div class="workspace-grid" id="workspaceGrid">
+        <!-- Workspaces will be populated via JavaScript -->
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Workspace Statistics</h2>
+      </div>
+      <div id="workspaceStats">
+        <p class="empty-state">Select a workspace to view statistics</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Workspace Modal -->
+  <div class="modal" id="workspaceModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Create New Workspace</h2>
+        <button class="close-modal" id="closeModal">&times;</button>
+      </div>
+      <form id="workspaceForm">
+        <div class="form-group">
+          <label for="workspaceName">Workspace Name</label>
+          <input type="text" id="workspaceName" required placeholder="e.g., Marketing Team">
+        </div>
+        <div class="form-group">
+          <label for="workspaceDescription">Description</label>
+          <textarea id="workspaceDescription" placeholder="What is this workspace for?"></textarea>
+        </div>
+        
+        <div class="action-buttons">
+          <button type="submit" id="saveWorkspaceBtn">Create Workspace</button>
+          <button type="button" class="secondary" id="cancelModal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // API Stub for data operations
+    const apiStub = {
+      getWorkspaceData: function() {
+        const data = localStorage.getItem('picktask_data');
+        return data ? JSON.parse(data) : { workspaces: [] };
+      },
+      
+      saveWorkspaceData: function(data) {
+        localStorage.setItem('picktask_data', JSON.stringify(data));
+      },
+      
+      getWorkspaces: function() {
+        const data = this.getWorkspaceData();
+        return data.workspaces || [];
+      },
+      
+      saveWorkspaces: function(workspaces) {
+        const data = this.getWorkspaceData();
+        data.workspaces = workspaces;
+        this.saveWorkspaceData(data);
+      },
+      
+      getCurrentWorkspaceId: function() {
+        return localStorage.getItem('picktask_current_workspace') || '';
+      },
+      
+      setCurrentWorkspace: function(workspaceId) {
+        localStorage.setItem('picktask_current_workspace', workspaceId);
+      },
+      
+      createWorkspace: function(workspaceData) {
+        const workspaces = this.getWorkspaces();
+        const newWorkspace = {
+          id: 'ws_' + Date.now(),
+          name: workspaceData.name,
+          description: workspaceData.description || '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        workspaces.push(newWorkspace);
+        this.saveWorkspaces(workspaces);
+        
+        return { success: true, data: newWorkspace };
+      },
+      
+      switchWorkspace: function(workspaceId) {
+        const workspaces = this.getWorkspaces();
+        const workspace = workspaces.find(ws => ws.id === workspaceId);
+        
+        if (!workspace) {
+          return { success: false, message: 'Workspace not found' };
+        }
+        
+        this.setCurrentWorkspace(workspaceId);
+        
+        // Add activity log
+        const data = this.getWorkspaceData();
+        data.activities = data.activities || [];
+        data.activities.unshift({
+          ts: Date.now(),
+          msg: `Switched to workspace: ${workspace.name}`
+        });
+        this.saveWorkspaceData(data);
+        
+        return { success: true, data: workspace };
+      },
+      
+      getWorkspaceStats: function(workspaceId) {
+        const data = this.getWorkspaceData();
+        const tasks = data.tasks || [];
+        const users = data.users || [];
+        
+        // Filter tasks by workspace (if we had workspace-specific tasks)
+        const workspaceTasks = tasks; // In a real app, we'd filter by workspaceId
+        
+        return {
+          totalTasks: workspaceTasks.length,
+          completedTasks: workspaceTasks.filter(task => task.colId === 'c4').length,
+          totalMembers: users.length,
+          activeTasks: workspaceTasks.filter(task => task.colId !== 'c4').length
+        };
+      }
+    };
+
+    // UI Functions
+    function showAlert(message, type = 'success') {
+      const alertContainer = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      alertContainer.appendChild(alert);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        alert.remove();
+      }, 5000);
+    }
+
+    function renderWorkspaces() {
+      const workspaceGrid = document.getElementById('workspaceGrid');
+      const workspaces = apiStub.getWorkspaces();
+      const currentWorkspaceId = apiStub.getCurrentWorkspaceId();
+      
+      // Clear the grid
+      workspaceGrid.innerHTML = '';
+      
+      // Show empty state if no workspaces
+      if (workspaces.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'empty-state';
+        emptyState.textContent = 'No workspaces yet. Create your first workspace to get started!';
+        workspaceGrid.appendChild(emptyState);
+        return;
+      }
+      
+      // Render workspaces
+      workspaces.forEach(workspace => {
+        const stats = apiStub.getWorkspaceStats(workspace.id);
+        const isCurrent = workspace.id === currentWorkspaceId;
+        
+        const card = document.createElement('div');
+        card.className = `workspace-card ${isCurrent ? 'current' : ''}`;
+        card.setAttribute('data-id', workspace.id);
+        card.innerHTML = `
+          <div class="workspace-header">
+            <div>
+              <div class="workspace-name">${workspace.name}</div>
+              <div class="workspace-desc">${workspace.description || 'No description'}</div>
+            </div>
+            ${isCurrent ? '<span class="badge badge-success">Current</span>' : ''}
+          </div>
+          <div class="workspace-meta">
+            <div title="Total tasks">📋 ${stats.totalTasks}</div>
+            <div title="Completed tasks">✅ ${stats.completedTasks}</div>
+            <div title="Team members">👥 ${stats.totalMembers}</div>
+          </div>
+        `;
+        workspaceGrid.appendChild(card);
+      });
+      
+      // Add event listeners to workspace cards
+      document.querySelectorAll('.workspace-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const workspaceId = this.getAttribute('data-id');
+          switchWorkspace(workspaceId);
+        });
+      });
+    }
+
+    function renderWorkspaceStats() {
+      const statsContainer = document.getElementById('workspaceStats');
+      const currentWorkspaceId = apiStub.getCurrentWorkspaceId();
+      
+      if (!currentWorkspaceId) {
+        statsContainer.innerHTML = '<p class="empty-state">Select a workspace to view statistics</p>';
+        return;
+      }
+      
+      const workspaces = apiStub.getWorkspaces();
+      const currentWorkspace = workspaces.find(ws => ws.id === currentWorkspaceId);
+      const stats = apiStub.getWorkspaceStats(currentWorkspaceId);
+      
+      if (!currentWorkspace) {
+        statsContainer.innerHTML = '<p class="empty-state">Workspace not found</p>';
+        return;
+      }
+      
+      statsContainer.innerHTML = `
+        <h3>${currentWorkspace.name} Overview</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+          <div style="padding: 16px; background: var(--bg); border-radius: var(--radius); text-align: center;">
+            <div style="font-size: 24px; font-weight: bold; color: var(--accent);">${stats.totalTasks}</div>
+            <div style="font-size: 14px; color: var(--muted);">Total Tasks</div>
+          </div>
+          <div style="padding: 16px; background: var(--bg); border-radius: var(--radius); text-align: center;">
+            <div style="font-size: 24px; font-weight: bold; color: var(--success);">${stats.completedTasks}</div>
+            <div style="font-size: 14px; color: var(--muted);">Completed</div>
+          </div>
+          <div style="padding: 16px; background: var(--bg); border-radius: var(--radius); text-align: center;">
+            <div style="font-size: 24px; font-weight: bold; color: var(--warning);">${stats.activeTasks}</div>
+            <div style="font-size: 14px; color: var(--muted);">Active</div>
+          </div>
+          <div style="padding: 16px; background: var(--bg); border-radius: var(--radius); text-align: center;">
+            <div style="font-size: 24px; font-weight: bold; color: var(--accent);">${stats.totalMembers}</div>
+            <div style="font-size: 14px; color: var(--muted);">Team Members</div>
+          </div>
+        </div>
+        <div style="margin-top: 20px;">
+          <p><strong>Created:</strong> ${new Date(currentWorkspace.createdAt).toLocaleDateString()}</p>
+          <p><strong>Description:</strong> ${currentWorkspace.description || 'No description provided'}</p>
+        </div>
+      `;
+    }
+
+    function switchWorkspace(workspaceId) {
+      const result = apiStub.switchWorkspace(workspaceId);
+      
+      if (result.success) {
+        showAlert(`Switched to workspace: ${result.data.name}`);
+        renderWorkspaces();
+        renderWorkspaceStats();
+      } else {
+        showAlert(result.message, 'error');
+      }
+    }
+
+    function openWorkspaceModal() {
+      const modal = document.getElementById('workspaceModal');
+      const form = document.getElementById('workspaceForm');
+      
+      // Reset form
+      form.reset();
+      
+      modal.classList.add('show');
+    }
+
+    function closeWorkspaceModal() {
+      const modal = document.getElementById('workspaceModal');
+      modal.classList.remove('show');
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if user is logged in
+      const session = localStorage.getItem('picktask_session');
+      if (!session) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // Set up event listeners
+      document.getElementById('createWorkspaceBtn').addEventListener('click', openWorkspaceModal);
+      
+      document.getElementById('workspaceForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('workspaceName').value;
+        const description = document.getElementById('workspaceDescription').value;
+        
+        const result = apiStub.createWorkspace({ name, description });
+        
+        if (result.success) {
+          showAlert(`Workspace "${name}" created successfully`);
+          closeWorkspaceModal();
+          renderWorkspaces();
+          
+          // Switch to the new workspace
+          switchWorkspace(result.data.id);
+        } else {
+          showAlert(result.message, 'error');
+        }
+      });
+      
+      document.getElementById('closeModal').addEventListener('click', closeWorkspaceModal);
+      document.getElementById('cancelModal').addEventListener('click', closeWorkspaceModal);
+      
+      // Render initial data
+      renderWorkspaces();
+      renderWorkspaceStats();
+    });
+
+    // Small QA check
+    console.assert(typeof apiStub.getWorkspaces === 'function', 'apiStub.getWorkspaces should be a function');
+  </script>
+</body>
+</html>

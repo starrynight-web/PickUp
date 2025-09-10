@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Role Management - Pick Task</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --accent: #3b82f6;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --border: #334155;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--ff-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 32px;
+    }
+
+    @media (max-width: 968px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    button {
+      padding: 10px 16px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-family: inherit;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button.secondary {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    button.danger {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .roles-list {
+      list-style: none;
+    }
+
+    .role-item {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .role-item:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    .role-item.selected {
+      border-color: var(--accent);
+      background-color: rgba(59, 130, 246, 0.05);
+    }
+
+    .role-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .role-name {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .role-desc {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .permissions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .permission-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .permission-item input[type="checkbox"] {
+      width: auto;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .alert-error {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .badge-primary {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--accent);
+    }
+
+    .badge-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .badge-warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="dashboard.html" class="brand">
+        <div class="logo">PT</div>
+        <span style="font-weight: 700;">Pick Task</span>
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="team.html">Team</a>
+        <a href="workspace.html">Workspace</a>
+      </div>
+    </header>
+
+    <a href="team.html" class="back-link">← Back to Team Management</a>
+
+    <h1>Role Management</h1>
+    <p class="subtitle">Create and manage roles with specific permissions for your team members</p>
+
+    <div id="alertContainer"></div>
+
+    <div class="content">
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <h2>Roles</h2>
+            <button id="createRoleBtn">New Role</button>
+          </div>
+          <ul class="roles-list" id="rolesList">
+            <!-- Roles will be populated via JavaScript -->
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <h2 id="selectedRoleTitle">Select a Role</h2>
+            <div id="roleActions" style="display: none;">
+              <button class="secondary" id="editRoleBtn">Edit</button>
+              <button class="danger" id="deleteRoleBtn">Delete</button>
+            </div>
+          </div>
+          <div id="roleDetails">
+            <p class="empty-state">Select a role from the list to view and edit its permissions</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create/Edit Role Modal -->
+  <div class="modal" id="roleModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Create New Role</h2>
+        <button class="close-modal" id="closeModal">&times;</button>
+      </div>
+      <form id="roleForm">
+        <input type="hidden" id="roleId">
+        <div class="form-group">
+          <label for="roleName">Role Name</label>
+          <input type="text" id="roleName" required placeholder="e.g., Project Manager">
+        </div>
+        <div class="form-group">
+          <label for="roleDescription">Description</label>
+          <input type="text" id="roleDescription" placeholder="Brief description of this role">
+        </div>
+        
+        <h3 style="margin: 20px 0 12px 0;">Permissions</h3>
+        
+        <div class="permissions-grid">
+          <div class="permission-item">
+            <input type="checkbox" id="permTasksCreate" value="tasks:create">
+            <label for="permTasksCreate">Create Tasks</label>
+          </div>
+          <div class="permission-item">
+            <input type="checkbox" id="permTasksEdit" value="tasks:edit">
+            <label for="permTasksEdit">Edit Tasks</label>
+          </div>
+          <div class="permission-item">
+            <input type="checkbox" id="permTasksDelete" value="tasks:delete">
+            <label for="permTasksDelete">Delete Tasks</label>
+          </div>
+          <div class="permission-item">
+            <input type="checkbox" id="permTasksAssign" value="tasks:assign">
+            <label for="permTasksAssign">Assign Tasks</label>
+          </div>
+          <div class="permission-item">
+            <input type="checkbox" id="permTeamView" value="team:view">
+            <label for="permTeamView">View Team</label>
+          </div>
+          <div class="permission-item">
+            <input type="checkbox" id="permTeamManage" value="team:manage">
+            <label for="permTeamManage">Manage Team</label>
+          </div>
+          <div class="permission-item">
+            <input type="checkbox" id="permWorkspaceSettings" value="workspace:settings">
+            <label for="permWorkspaceSettings">Workspace Settings</label>
+          </div>
+          <div class="permission-item">
+            <input type="checkbox" id="permBilling" value="billing:view">
+            <label for="permBilling">View Billing</label>
+          </div>
+        </div>
+        
+        <div class="action-buttons">
+          <button type="submit" id="saveRoleBtn">Save Role</button>
+          <button type="button" class="secondary" id="cancelModal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // API Stub for data operations
+    const apiStub = {
+      getWorkspaceData: function() {
+        const data = localStorage.getItem('picktask_data');
+        return data ? JSON.parse(data) : { roles: [] };
+      },
+      
+      saveWorkspaceData: function(data) {
+        localStorage.setItem('picktask_data', JSON.stringify(data));
+      },
+      
+      getRoles: function() {
+        const data = this.getWorkspaceData();
+        return data.roles || [];
+      },
+      
+      saveRoles: function(roles) {
+        const data = this.getWorkspaceData();
+        data.roles = roles;
+        this.saveWorkspaceData(data);
+      },
+      
+      getRole: function(id) {
+        const roles = this.getRoles();
+        return roles.find(role => role.id === id);
+      },
+      
+      createRole: function(roleData) {
+        const roles = this.getRoles();
+        const newRole = {
+          id: 'role_' + Date.now(),
+          name: roleData.name,
+          description: roleData.description || '',
+          permissions: roleData.permissions || [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        roles.push(newRole);
+        this.saveRoles(roles);
+        
+        return { success: true, data: newRole };
+      },
+      
+      updateRole: function(id, roleData) {
+        const roles = this.getRoles();
+        const index = roles.findIndex(role => role.id === id);
+        
+        if (index === -1) {
+          return { success: false, message: 'Role not found' };
+        }
+        
+        roles[index] = {
+          ...roles[index],
+          name: roleData.name,
+          description: roleData.description || '',
+          permissions: roleData.permissions || [],
+          updatedAt: new Date().toISOString()
+        };
+        
+        this.saveRoles(roles);
+        
+        return { success: true, data: roles[index] };
+      },
+      
+      deleteRole: function(id) {
+        const roles = this.getRoles();
+        const index = roles.findIndex(role => role.id === id);
+        
+        if (index === -1) {
+          return { success: false, message: 'Role not found' };
+        }
+        
+        // Check if any users have this role
+        const data = this.getWorkspaceData();
+        const usersWithRole = (data.users || []).filter(user => user.roleId === id);
+        
+        if (usersWithRole.length > 0) {
+          return { 
+            success: false, 
+            message: `Cannot delete role. ${usersWithRole.length} user(s) have this role assigned.` 
+          };
+        }
+        
+        roles.splice(index, 1);
+        this.saveRoles(roles);
+        
+        return { success: true };
+      }
+    };
+
+    // UI Functions
+    function showAlert(message, type = 'success') {
+      const alertContainer = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      alertContainer.appendChild(alert);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        alert.remove();
+      }, 5000);
+    }
+
+    function renderRolesList() {
+      const rolesList = document.getElementById('rolesList');
+      const roles = apiStub.getRoles();
+      
+      // Clear the list
+      rolesList.innerHTML = '';
+      
+      // Show empty state if no roles
+      if (roles.length === 0) {
+        const emptyState = document.createElement('li');
+        emptyState.className = 'empty-state';
+        emptyState.textContent = 'No roles created yet. Create your first role to get started!';
+        rolesList.appendChild(emptyState);
+        return;
+      }
+      
+      // Render roles
+      roles.forEach(role => {
+        const li = document.createElement('li');
+        li.className = 'role-item';
+        li.setAttribute('data-id', role.id);
+        li.innerHTML = `
+          <div class="role-header">
+            <div class="role-name">${role.name}</div>
+            <span class="badge badge-primary">${role.permissions.length} permissions</span>
+          </div>
+          <div class="role-desc">${role.description || 'No description'}</div>
+        `;
+        rolesList.appendChild(li);
+      });
+      
+      // Add event listeners to role items
+      document.querySelectorAll('.role-item').forEach(item => {
+        item.addEventListener('click', function() {
+          // Remove selected class from all items
+          document.querySelectorAll('.role-item').forEach(i => {
+            i.classList.remove('selected');
+          });
+          
+          // Add selected class to clicked item
+          this.classList.add('selected');
+          
+          // Load role details
+          const roleId = this.getAttribute('data-id');
+          loadRoleDetails(roleId);
+        });
+      });
+    }
+
+    function loadRoleDetails(roleId) {
+      const role = apiStub.getRole(roleId);
+      if (!role) return;
+      
+      const roleDetails = document.getElementById('roleDetails');
+      const selectedRoleTitle = document.getElementById('selectedRoleTitle');
+      const roleActions = document.getElementById('roleActions');
+      
+      selectedRoleTitle.textContent = role.name;
+      roleActions.style.display = 'flex';
+      
+      // Update edit and delete buttons
+      document.getElementById('editRoleBtn').setAttribute('data-id', roleId);
+      document.getElementById('deleteRoleBtn').setAttribute('data-id', roleId);
+      
+      // Create permissions list HTML
+      let permissionsHTML = '';
+      if (role.permissions.length > 0) {
+        permissionsHTML = `
+          <h3 style="margin-bottom: 12px;">Permissions</h3>
+          <div class="permissions-grid">
+            ${role.permissions.map(perm => `
+              <div class="permission-item">
+                <input type="checkbox" checked disabled>
+                <label>${formatPermissionName(perm)}</label>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        permissionsHTML = '<p>This role has no permissions assigned.</p>';
+      }
+      
+      roleDetails.innerHTML = `
+        <p>${role.description || 'No description provided.'}</p>
+        <p><small>Created: ${new Date(role.createdAt).toLocaleDateString()}</small></p>
+        ${permissionsHTML}
+      `;
+    }
+
+    function formatPermissionName(permission) {
+      const permissionNames = {
+        'tasks:create': 'Create Tasks',
+        'tasks:edit': 'Edit Tasks',
+        'tasks:delete': 'Delete Tasks',
+        'tasks:assign': 'Assign Tasks',
+        'team:view': 'View Team',
+        'team:manage': 'Manage Team',
+        'workspace:settings': 'Workspace Settings',
+        'billing:view': 'View Billing'
+      };
+      
+      return permissionNames[permission] || permission;
+    }
+
+    function openRoleModal(roleId = null) {
+      const modal = document.getElementById('roleModal');
+      const form = document.getElementById('roleForm');
+      const modalTitle = document.getElementById('modalTitle');
+      
+      // Reset form
+      form.reset();
+      document.getElementById('roleId').value = '';
+      
+      // Clear all checkboxes
+      document.querySelectorAll('.permissions-grid input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+      });
+      
+      if (roleId) {
+        // Edit existing role
+        modalTitle.textContent = 'Edit Role';
+        const role = apiStub.getRole(roleId);
+        
+        if (role) {
+          document.getElementById('roleId').value = role.id;
+          document.getElementById('roleName').value = role.name;
+          document.getElementById('roleDescription').value = role.description || '';
+          
+          // Check the appropriate permission boxes
+          role.permissions.forEach(permission => {
+            const checkbox = document.querySelector(`input[value="${permission}"]`);
+            if (checkbox) checkbox.checked = true;
+          });
+        }
+      } else {
+        // Create new role
+        modalTitle.textContent = 'Create New Role';
+      }
+      
+      modal.classList.add('show');
+    }
+
+    function closeRoleModal() {
+      const modal = document.getElementById('roleModal');
+      modal.classList.remove('show');
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if user is logged in
+      const session = localStorage.getItem('picktask_session');
+      if (!session) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // Set up event listeners
+      document.getElementById('createRoleBtn').addEventListener('click', () => openRoleModal());
+      
+      document.getElementById('editRoleBtn').addEventListener('click', function() {
+        const roleId = this.getAttribute('data-id');
+        openRoleModal(roleId);
+      });
+      
+      document.getElementById('deleteRoleBtn').addEventListener('click', function() {
+        const roleId = this.getAttribute('data-id');
+        if (confirm('Are you sure you want to delete this role? This action cannot be undone.')) {
+          const result = apiStub.deleteRole(roleId);
+          
+          if (result.success) {
+            showAlert('Role deleted successfully');
+            renderRolesList();
+            
+            // Clear the role details view
+            document.getElementById('selectedRoleTitle').textContent = 'Select a Role';
+            document.getElementById('roleActions').style.display = 'none';
+            document.getElementById('roleDetails').innerHTML = 
+              '<p class="empty-state">Select a role from the list to view and edit its permissions</p>';
+          } else {
+            showAlert(result.message, 'error');
+          }
+        }
+      });
+      
+      document.getElementById('roleForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const roleId = document.getElementById('roleId').value;
+        const name = document.getElementById('roleName').value;
+        const description = document.getElementById('roleDescription').value;
+        
+        // Get selected permissions
+        const permissions = [];
+        document.querySelectorAll('.permissions-grid input[type="checkbox"]:checked').forEach(checkbox => {
+          permissions.push(checkbox.value);
+        });
+        
+        let result;
+        if (roleId) {
+          // Update existing role
+          result = apiStub.updateRole(roleId, { name, description, permissions });
+        } else {
+          // Create new role
+          result = apiStub.createRole({ name, description, permissions });
+        }
+        
+        if (result.success) {
+          showAlert(`Role ${roleId ? 'updated' : 'created'} successfully`);
+          closeRoleModal();
+          renderRolesList();
+          
+          // If we were editing, reload the role details
+          if (roleId) {
+            loadRoleDetails(roleId);
+          }
+        } else {
+          showAlert(result.message, 'error');
+        }
+      });
+      
+      document.getElementById('closeModal').addEventListener('click', closeRoleModal);
+      document.getElementById('cancelModal').addEventListener('click', closeRoleModal);
+      
+      // Render initial data
+      renderRolesList();
+      
+      // If there are roles, select the first one by default
+      const roles = apiStub.getRoles();
+      if (roles.length > 0) {
+        const firstRole = document.querySelector('.role-item');
+        if (firstRole) {
+          firstRole.click();
+        }
+      }
+    });
+
+    // Small QA check
+    console.assert(typeof apiStub.getRoles === 'function', 'apiStub.getRoles should be a function');
+  </script>
+</body>
+</html>

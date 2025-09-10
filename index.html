@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pick Task — Home</title>
+  <meta name="description" content="Pick Task — lightweight task manager MVP (demo). Login: Admin / admin" />
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa4b2; --accent:#6ee7b7; --glass: rgba(255,255,255,0.04);
+      --radius:14px; --shadow: 0 6px 30px rgba(2,6,23,0.6);
+      --maxw:1100px; --gap:16px; --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:var(--ff-sans);background:linear-gradient(180deg,#071226 0%, #071727 60%);color:#e6eef6;-webkit-font-smoothing:antialiased}
+    .container{max-width:var(--maxw);margin:0 auto;padding:24px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#60a5fa);display:flex;align-items:center;justify-content:center;font-weight:700;color:#05202b}
+    nav{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--glass);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,#22c1c3,#6ee7b7);color:#042226;border:none}
+    main{display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start;padding-top:36px}
+    .hero{padding:22px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent);box-shadow:var(--shadow)}
+    h1{margin:0;font-size:28px}
+    p.lead{color:var(--muted);margin-top:8px}
+    .features{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+    .card{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px}
+
+    /* Right column */
+    .right{position:relative}
+    .quick{padding:18px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);box-shadow:var(--shadow)}
+    .ghost-link{display:block;margin-top:12px;color:var(--accent);text-decoration:none}
+
+    /* Footer */
+    footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center}
+
+    /* Login modal */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;visibility:hidden;pointer-events:none}
+    .modal.show{visibility:visible;pointer-events:auto}
+    .modal-panel{width:100%;max-width:420px;background:linear-gradient(180deg,#071826, #081226);padding:22px;border-radius:14px;border:1px solid rgba(255,255,255,0.04)}
+    label{display:block;margin-bottom:6px;font-size:13px;color:var(--muted)}
+    input[type=text],input[type=password]{width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+
+    /* Responsive */
+    @media (max-width:900px){main{grid-template-columns:1fr} .right{order:2} header{flex-direction:column;align-items:flex-start} .brand{margin-bottom:12px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden>PT</div>
+        <div>
+          <div style="font-weight:700">Pick Task</div>
+          <div style="font-size:12px;color:var(--muted)">Manage work. Fast.</div>
+        </div>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <button class="btn" id="darkToggle" title="Toggle dark mode">Toggle theme</button>
+        <a class="btn" href="#features">Features</a>
+        <button class="btn primary" id="openLogin">Log in</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <h1 id="hero-title">Pick Task — Pick your work with clarity</h1>
+        <p class="lead">A lightweight task manager MVP inspired by ClickUp. Mobile-first, production-looking UI, and demo data so you can prototype fast.</p>
+
+        <div class="features" id="features">
+          <div class="card"><strong>Kanban board</strong><div style="color:var(--muted);font-size:13px;margin-top:6px">Drag & drop columns and tasks</div></div>
+          <div class="card"><strong>Team board</strong><div style="color:var(--muted);font-size:13px;margin-top:6px">Assign tasks & manage members</div></div>
+          <div class="card"><strong>Voice memo</strong><div style="color:var(--muted);font-size:13px;margin-top:6px">Transcribe audio & generate tasks</div></div>
+          <div class="card"><strong>Workspaces</strong><div style="color:var(--muted);font-size:13px;margin-top:6px">Multi-workspace, roles, invites</div></div>
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn primary" href="dashboard.html">Open demo dashboard</a>
+          <a class="btn" href="kanban.html">Try Kanban</a>
+          <a class="btn" href="memo.html">Voice memo</a>
+        </div>
+
+      </section>
+
+      <aside class="right">
+        <div class="quick">
+          <h3 style="margin:0">Quick start</h3>
+          <p style="color:var(--muted);margin-top:8px">Login (demo): <strong>Admin</strong> / <strong>admin</strong></p>
+          <ol style="color:var(--muted);font-size:14px;margin-top:10px;padding-left:18px">
+            <li>Click <em>Log in</em></li>
+            <li>Go to Kanban to move tasks</li>
+            <li>Use Voice Memo to create tasks</li>
+          </ol>
+          <a class="ghost-link" href="create-workspace.html">Create a workspace →</a>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      Pick Task — Demo MVP. Replace client-side auth with real backend for production.
+    </footer>
+  </div>
+
+  <!-- Login Modal -->  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
+    <div class="modal-panel" role="document">
+      <h2 id="login-title">Sign in</h2>
+      <form id="loginForm" onsubmit="return false">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" value="" required />
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+        <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+          <button class="btn" type="button" id="closeModal">Cancel</button>
+          <button class="btn primary" id="loginBtn" type="submit">Sign in</button>
+        </div>
+      </form>
+      <p style="color:var(--muted);font-size:13px;margin-top:12px">Demo credentials: <strong>Admin</strong> / <strong>admin</strong></p>
+    </div>
+  </div>  <script>
+    // Simple seed initializer
+    (function seed(){
+      try{
+        if(!localStorage.getItem('picktask_seed')){
+          const demo = {users:[{id:1,name:'Admin',username:'Admin',role:'admin'}],
+            workspaces:[{id:1,name:'Default workspace'}],
+            columns:[{id:'c1',name:'To do'},{id:'c2',name:'On process'},{id:'c3',name:'Have Issue'},{id:'c4',name:'Completed'}],
+            tasks:[{id:'t1',title:'Welcome to Pick Task',colId:'c1',desc:'Edit or move this task',assignee:null}],
+            activities:[]
+          };
+          localStorage.setItem('picktask_seed', '1');
+          localStorage.setItem('picktask_data', JSON.stringify(demo));
+          console.log('Pick Task: seed data created');
+        }
+      }catch(e){console.error(e)}
+    })();
+
+    // Modal logic
+    const modal = document.getElementById('modal');
+    document.getElementById('openLogin').addEventListener('click',()=>{modal.classList.add('show');document.getElementById('username').focus();});
+    document.getElementById('closeModal').addEventListener('click',()=>modal.classList.remove('show'));
+
+    // Demo login logic
+    document.getElementById('loginForm').addEventListener('submit',()=>{
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      if(u.toLowerCase() === 'admin' && p === 'admin'){
+        localStorage.setItem('picktask_session', JSON.stringify({user:'Admin',logged:true}));
+        // quick activity log
+        const data = JSON.parse(localStorage.getItem('picktask_data')||'{}');
+        data.activities = data.activities || [];
+        data.activities.unshift({ts:Date.now(),msg:'User Admin signed in'});
+        localStorage.setItem('picktask_data', JSON.stringify(data));
+        window.location.href='dashboard.html';
+      }else{
+        alert('Invalid demo credentials — try Admin / admin');
+      }
+    });
+
+    // Theme toggle
+    const darkToggle = document.getElementById('darkToggle');
+    darkToggle.addEventListener('click',()=>{
+      const cur = document.documentElement.style.getPropertyValue('--bg');
+      // quick theme toggle: flip background colors
+      if(document.body.style.filter){document.body.style.filter='';}else{document.body.style.filter='brightness(1.02)'}
+      alert('Theme toggle (demo)');
+    });
+
+    // Small QA checks
+    console.assert(typeof localStorage !== 'undefined','localStorage required');
+    console.assert(window.location,'location exists');
+  </script></body>
+</html>

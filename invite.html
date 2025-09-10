@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invite Team Members - Pick Task</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --accent: #3b82f6;
+      --danger: #ef4444;
+      --success: #10b981;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --border: #334155;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--ff-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    button {
+      padding: 10px 16px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-family: inherit;
+    }
+
+    button.secondary {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .members-list {
+      list-style: none;
+    }
+
+    .member-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .member-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+    }
+
+    .member-name {
+      font-weight: 500;
+    }
+
+    .member-role {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .alert-error {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="dashboard.html" class="brand">
+        <div class="logo">PT</div>
+        <span style="font-weight: 700;">Pick Task</span>
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="team.html">Team</a>
+        <a href="workspace.html">Workspace</a>
+      </div>
+    </header>
+
+    <a href="team.html" class="back-link">← Back to Team</a>
+
+    <h1>Invite Team Members</h1>
+    <p class="subtitle">Add new members to your workspace and manage existing ones</p>
+
+    <div id="alertContainer"></div>
+
+    <div class="content">
+      <div class="card">
+        <h2 style="margin-bottom: 16px;">Invite New Member</h2>
+        <form id="inviteForm">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" required placeholder="team.member@example.com">
+          </div>
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" required placeholder="John Smith">
+          </div>
+          <div class="form-group">
+            <label for="role">Role</label>
+            <select id="role" required>
+              <option value="">Select a role</option>
+              <option value="admin">Admin</option>
+              <option value="member">Member</option>
+              <option value="guest">Guest</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 12px;">
+            <button type="submit">Send Invitation</button>
+            <button type="reset" class="secondary">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-bottom: 16px;">Team Members</h2>
+        <ul class="members-list" id="membersList">
+          <!-- Members will be populated via JavaScript -->
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // API Stub for data operations
+    const apiStub = {
+      getWorkspaceData: function() {
+        const data = localStorage.getItem('picktask_data');
+        return data ? JSON.parse(data) : { users: [], invitations: [] };
+      },
+      
+      saveWorkspaceData: function(data) {
+        localStorage.setItem('picktask_data', JSON.stringify(data));
+      },
+      
+      getCurrentWorkspace: function() {
+        return localStorage.getItem('picktask_current_workspace') || 'default';
+      },
+      
+      // Get all team members (users + invitations)
+      getTeamMembers: function() {
+        const data = this.getWorkspaceData();
+        const workspace = this.getCurrentWorkspace();
+        
+        // Get existing users
+        const users = data.users || [];
+        
+        // Get pending invitations
+        const invitations = data.invitations || [];
+        
+        return { users, invitations };
+      },
+      
+      // Add a new invitation
+      addInvitation: function(email, name, role) {
+        const data = this.getWorkspaceData();
+        if (!data.invitations) data.invitations = [];
+        
+        // Check if email already invited
+        const existingInvite = data.invitations.find(inv => inv.email === email);
+        if (existingInvite) {
+          return { success: false, message: 'This email has already been invited' };
+        }
+        
+        // Check if email is already a user
+        const existingUser = data.users.find(user => user.email === email);
+        if (existingUser) {
+          return { success: false, message: 'This email is already a team member' };
+        }
+        
+        // Add new invitation
+        const newInvitation = {
+          id: 'inv_' + Date.now(),
+          email,
+          name,
+          role,
+          invitedAt: new Date().toISOString(),
+          status: 'pending'
+        };
+        
+        data.invitations.push(newInvitation);
+        this.saveWorkspaceData(data);
+        
+        return { success: true, data: newInvitation };
+      },
+      
+      // Remove a team member or invitation
+      removeTeamMember: function(id) {
+        const data = this.getWorkspaceData();
+        
+        // Check if it's a user
+        const userIndex = data.users.findIndex(user => user.id === id);
+        if (userIndex !== -1) {
+          data.users.splice(userIndex, 1);
+          this.saveWorkspaceData(data);
+          return { success: true, type: 'user' };
+        }
+        
+        // Check if it's an invitation
+        const invIndex = data.invitations.findIndex(inv => inv.id === id);
+        if (invIndex !== -1) {
+          data.invitations.splice(invIndex, 1);
+          this.saveWorkspaceData(data);
+          return { success: true, type: 'invitation' };
+        }
+        
+        return { success: false, message: 'Member not found' };
+      }
+    };
+
+    // UI Functions
+    function showAlert(message, type = 'success') {
+      const alertContainer = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      alertContainer.appendChild(alert);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        alert.remove();
+      }, 5000);
+    }
+
+    function renderTeamMembers() {
+      const membersList = document.getElementById('membersList');
+      const { users, invitations } = apiStub.getTeamMembers();
+      
+      // Clear the list
+      membersList.innerHTML = '';
+      
+      // Show empty state if no members
+      if (users.length === 0 && invitations.length === 0) {
+        const emptyState = document.createElement('li');
+        emptyState.className = 'empty-state';
+        emptyState.textContent = 'No team members yet. Invite someone to get started!';
+        membersList.appendChild(emptyState);
+        return;
+      }
+      
+      // Render invitations (pending members)
+      invitations.forEach(invitation => {
+        const li = document.createElement('li');
+        li.className = 'member-item';
+        li.innerHTML = `
+          <div class="member-info">
+            <div class="avatar">${invitation.name.charAt(0)}</div>
+            <div>
+              <div class="member-name">${invitation.name}</div>
+              <div class="member-role">${invitation.role} (Invited)</div>
+              <div style="font-size: 12px; color: var(--muted);">${invitation.email}</div>
+            </div>
+          </div>
+          <button class="remove-btn" data-id="${invitation.id}" data-type="invitation">Cancel Invite</button>
+        `;
+        membersList.appendChild(li);
+      });
+      
+      // Render existing users
+      users.forEach(user => {
+        const li = document.createElement('li');
+        li.className = 'member-item';
+        li.innerHTML = `
+          <div class="member-info">
+            <div class="avatar">${user.name.charAt(0)}</div>
+            <div>
+              <div class="member-name">${user.name}</div>
+              <div class="member-role">${user.role}</div>
+              <div style="font-size: 12px; color: var(--muted);">${user.email || 'No email'}</div>
+            </div>
+          </div>
+          <button class="remove-btn" data-id="${user.id}" data-type="user">Remove</button>
+        `;
+        membersList.appendChild(li);
+      });
+      
+      // Add event listeners to remove buttons
+      document.querySelectorAll('.remove-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          const result = apiStub.removeTeamMember(id);
+          
+          if (result.success) {
+            showAlert(`Team member ${result.type === 'user' ? 'removed' : 'invitation canceled'} successfully`);
+            renderTeamMembers(); // Refresh the list
+          } else {
+            showAlert(result.message, 'error');
+          }
+        });
+      });
+    }
+
+    // Form handling
+    document.getElementById('inviteForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const name = document.getElementById('name').value;
+      const role = document.getElementById('role').value;
+      
+      if (!email || !name || !role) {
+        showAlert('Please fill all fields', 'error');
+        return;
+      }
+      
+      const result = apiStub.addInvitation(email, name, role);
+      
+      if (result.success) {
+        showAlert(`Invitation sent to ${email}`);
+        this.reset(); // Clear the form
+        renderTeamMembers(); // Refresh the list
+      } else {
+        showAlert(result.message, 'error');
+      }
+    });
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if user is logged in
+      const session = localStorage.getItem('picktask_session');
+      if (!session) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      renderTeamMembers();
+    });
+
+    // Small QA check
+    console.assert(typeof apiStub.getTeamMembers === 'function', 'apiStub.getTeamMembers should be a function');
+  </script>
+</body>
+</html>

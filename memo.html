@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Memo - Pick Task</title>
+  <style>
+    :root {
+      --bg: #0f1724;
+      --card: #0b1220;
+      --muted: #9aa4b2;
+      --accent: #6ee7b7;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --info: #60a5fa;
+      --glass: rgba(255, 255, 255, 0.04);
+      --radius: 14px;
+      --shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+      --maxw: 1100px;
+      --gap: 16px;
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--ff-sans);
+      background: linear-gradient(180deg, #071226 0%, #071727 60%);
+      color: #e6eef6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      padding: 0;
+    }
+
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #05202b;
+    }
+
+    nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      background: var(--glass);
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, #22c1c3, #6ee7b7);
+      color: #042226;
+      border: none;
+    }
+
+    .btn.primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn.danger {
+      background: rgba(248, 113, 113, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(248, 113, 113, 0.2);
+    }
+
+    .btn.danger:hover {
+      background: rgba(248, 113, 113, 0.2);
+    }
+
+    .btn.back {
+      margin-bottom: 20px;
+      align-self: flex-start;
+    }
+
+    .page-title {
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .memo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .recorder-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .recorder-controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .record-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(90deg, #22c1c3, #6ee7b7);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .record-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .record-btn.recording {
+      background: var(--danger);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .record-btn-icon {
+      width: 24px;
+      height: 24px;
+      background: #fff;
+      border-radius: 2px;
+    }
+
+    .record-btn.recording .record-btn-icon {
+      border-radius: 50%;
+      background: #fff;
+      width: 20px;
+      height: 20px;
+    }
+
+    .visualizer {
+      width: 100%;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .visualizer-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 100%;
+      padding: 0 10px;
+    }
+
+    .visualizer-bar {
+      width: 6px;
+      background: linear-gradient(to top, #22c1c3, #6ee7b7);
+      border-radius: 3px;
+      transition: height 0.1s ease;
+    }
+
+    .recorder-status {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .recorder-timer {
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      background: linear-gradient(90deg, #22c1c3, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .upload-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .upload-area {
+      border: 2px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .upload-area:hover {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .upload-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+      color: var(--muted);
+    }
+
+    .upload-text {
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .upload-file-input {
+      display: none;
+    }
+
+    .audio-player {
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    .audio-player audio {
+      width: 100%;
+    }
+
+    .transcription-container {
+      margin-top: 24px;
+    }
+
+    .transcription-text {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 120px;
+      max-height: 200px;
+      overflow-y: auto;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .extracted-tasks {
+      margin-top: 24px;
+    }
+
+    .task-list {
+      list-style: none;
+    }
+
+    .task-item {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .task-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .task-checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .task-checkbox.checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .task-checkbox.checked::after {
+      content: "✓";
+      color: #042226;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .task-title {
+      font-size: 14px;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .task-action {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .task-action:hover {
+      color: #fff;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    footer {
+      margin-top: 48px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @media (max-width: 900px) {
+      .memo-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .brand {
+        margin-bottom: 16px;
+      }
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(-100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .processing {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--accent);
+      margin: 16px 0;
+    }
+
+    .processing-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(110, 231, 183, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--accent);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">PT</div>
+        <div>
+          <div style="font-weight:700">Pick Task</div>
+          <div style="font-size:12px;color:var(--muted)">Voice Memo</div>
+        </div>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <a class="btn" href="dashboard.html">Dashboard</a>
+        <a class="btn" href="kanban.html">Kanban</a>
+        <a class="btn" href="team.html">Team</a>
+        <button class="btn" id="logoutBtn">Log out</button>
+      </nav>
+    </header>
+
+    <a href="dashboard.html" class="btn back">← Back to Dashboard</a>
+
+    <section class="page-title">
+      <h1>Voice Memo</h1>
+      <p class="subtitle">Record audio or upload files to extract tasks automatically</p>
+    </section>
+
+    <div class="memo-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Record Audio</div>
+        </div>
+        
+        <div class="recorder-container">
+          <div class="recorder-timer" id="recorderTimer">00:00</div>
+          
+          <div class="visualizer">
+            <div class="visualizer-bars" id="visualizerBars">
+              <!-- Visualizer bars will be generated dynamically -->
+            </div>
+          </div>
+          
+          <div class="recorder-controls">
+            <button class="record-btn" id="recordBtn">
+              <div class="record-btn-icon"></div>
+            </button>
+          </div>
+          
+          <div class="recorder-status" id="recorderStatus">Ready to record</div>
+        </div>
+        
+        <div class="audio-player" id="recordedAudioPlayer" style="display: none;">
+          <audio id="recordedAudio" controls></audio>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Upload Audio File</div>
+        </div>
+        
+        <div class="upload-container">
+          <label for="audioFileInput" class="upload-area" id="uploadArea">
+            <div class="upload-icon">🎵</div>
+            <div class="upload-text">Click to browse or drag & drop an audio file</div>
+            <div class="btn">Select File</div>
+            <input type="file" id="audioFileInput" class="upload-file-input" accept="audio/*">
+          </label>
+          
+          <div class="audio-player" id="uploadedAudioPlayer" style="display: none;">
+            <audio id="uploadedAudio" controls></audio>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 24px;">
+      <div class="card-header">
+        <div class="card-title">Transcription</div>
+        <button class="btn primary" id="transcribeBtn" disabled>Extract Tasks</button>
+      </div>
+      
+      <div class="transcription-container">
+        <div class="transcription-text" id="transcriptionText">
+          Record audio or upload a file to see the transcription here.
+        </div>
+        
+        <div class="processing" id="processingIndicator" style="display: none;">
+          <div class="processing-spinner"></div>
+          <div>Processing audio and extracting tasks...</div>
+        </div>
+      </div>
+      
+      <div class="extracted-tasks">
+        <div class="section-title">Extracted Tasks</div>
+        
+        <ul class="task-list" id="extractedTasksList">
+          <!-- Extracted tasks will appear here -->
+        </ul>
+        
+        <div class="empty-state" id="noTasksMessage" style="display: none;">
+          <div class="empty-state-icon">📝</div>
+          <div>No tasks extracted yet</div>
+        </div>
+        
+        <div class="action-buttons">
+          <button class="btn primary" id="createTasksBtn" disabled>Create Tasks</button>
+          <button class="btn" id="clearTasksBtn">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Pick Task — Demo MVP. In a production app, this would use real speech-to-text APIs.
+    </footer>
+  </div>
+
+  <div class="notification" id="notification">
+    <div>✅</div>
+    <div id="notification-text">Operation completed successfully</div>
+  </div>
+
+  <script>
+    // API Stub for localStorage operations
+    const apiStub = {
+      getData: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_data') || '{}');
+        } catch (e) {
+          console.error('Error reading from localStorage:', e);
+          return {};
+        }
+      },
+      
+      setData: (data) => {
+        try {
+          localStorage.setItem('picktask_data', JSON.stringify(data));
+          return true;
+        } catch (e) {
+          console.error('Error writing to localStorage:', e);
+          return false;
+        }
+      },
+      
+      getSession: () => {
+        try {
+          return JSON.parse(localStorage.getItem('picktask_session') || '{}');
+        } catch (e) {
+          console.error('Error reading session from localStorage:', e);
+          return {};
+        }
+      },
+      
+      clearSession: () => {
+        try {
+          localStorage.removeItem('picktask_session');
+          return true;
+        } catch (e) {
+          console.error('Error clearing session:', e);
+          return false;
+        }
+      }
+    };
+
+    // Check authentication
+    function checkAuth() {
+      const session = apiStub.getSession();
+      if (!session || !session.logged) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    }
+
+    // Show notification
+    function showNotification(message, isError = false) {
+      const notification = document.getElementById('notification');
+      const textEl = document.getElementById('notification-text');
+      
+      textEl.textContent = message;
+      
+      if (isError) {
+        notification.style.background = 'var(--danger)';
+        notification.querySelector('div:first-child').textContent = '❌';
+      } else {
+        notification.style.background = '';
+        notification.querySelector('div:first-child').textContent = '✅';
+      }
+      
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Initialize audio recording functionality
+    function initAudioRecorder() {
+      const recordBtn = document.getElementById('recordBtn');
+      const recorderTimer = document.getElementById('recorderTimer');
+      const recorderStatus = document.getElementById('recorderStatus');
+      const recordedAudioPlayer = document.getElementById('recordedAudioPlayer');
+      const recordedAudio = document.getElementById('recordedAudio');
+      const visualizerBars = document.getElementById('visualizerBars');
+      
+      let mediaRecorder = null;
+      let audioChunks = [];
+      let recordingInterval = null;
+      let seconds = 0;
+      
+      // Create visualizer bars
+      for (let i = 0; i < 20; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'visualizer-bar';
+        bar.style.height = '5px';
+        visualizerBars.appendChild(bar);
+      }
+      
+      const bars = visualizerBars.querySelectorAll('.visualizer-bar');
+      
+      // Update visualizer with random values (simulated)
+      function updateVisualizer() {
+        bars.forEach(bar => {
+          const height = Math.floor(Math.random() * 50) + 5;
+          bar.style.height = `${height}px`;
+        });
+      }
+      
+      // Format time for display
+      function formatTime(secs) {
+        const minutes = Math.floor(secs / 60);
+        const seconds = secs % 60;
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+      
+      // Start recording
+      async function startRecording() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+          
+          mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+          };
+          
+          mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            recordedAudio.src = audioUrl;
+            recordedAudioPlayer.style.display = 'block';
+            
+            // Enable transcribe button
+            document.getElementById('transcribeBtn').disabled = false;
+          };
+          
+          mediaRecorder.start();
+          recordBtn.classList.add('recording');
+          recorderStatus.textContent = 'Recording...';
+          
+          // Start timer
+          seconds = 0;
+          recorderTimer.textContent = formatTime(seconds);
+          recordingInterval = setInterval(() => {
+            seconds++;
+            recorderTimer.textContent = formatTime(seconds);
+            updateVisualizer();
+          }, 1000);
+          
+        } catch (error) {
+          console.error('Error accessing microphone:', error);
+          showNotification('Microphone access denied. Please check permissions.', true);
+        }
+      }
+      
+      // Stop recording
+      function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+          mediaRecorder.stream.getTracks().forEach(track => track.stop());
+          
+          recordBtn.classList.remove('recording');
+          recorderStatus.textContent = 'Recording complete';
+          
+          // Stop timer and visualizer
+          clearInterval(recordingInterval);
+          
+          // Reset visualizer bars
+          bars.forEach(bar => {
+            bar.style.height = '5px';
+          });
+        }
+      }
+      
+      // Toggle recording
+      recordBtn.addEventListener('click', () => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          stopRecording();
+        } else {
+          startRecording();
+        }
+      });
+    }
+
+    // Initialize file upload functionality
+    function initFileUpload() {
+      const audioFileInput = document.getElementById('audioFileInput');
+      const uploadArea = document.getElementById('uploadArea');
+      const uploadedAudioPlayer = document.getElementById('uploadedAudioPlayer');
+      const uploadedAudio = document.getElementById('uploadedAudio');
+      
+      // Handle file selection
+      audioFileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('audio/')) {
+          const audioUrl = URL.createObjectURL(file);
+          uploadedAudio.src = audioUrl;
+          uploadedAudioPlayer.style.display = 'block';
+          
+          // Enable transcribe button
+          document.getElementById('transcribeBtn').disabled = false;
+          
+          showNotification('Audio file uploaded successfully');
+        } else {
+          showNotification('Please select a valid audio file', true);
+        }
+      });
+      
+      // Drag and drop support
+      uploadArea.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        uploadArea.style.borderColor = 'var(--accent)';
+        uploadArea.style.backgroundColor = 'rgba(255, 255, 255, 0.02)';
+      });
+      
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        uploadArea.style.backgroundColor = 'transparent';
+      });
+      
+      uploadArea.addEventListener('drop', (event) => {
+        event.preventDefault();
+        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        uploadArea.style.backgroundColor = 'transparent';
+        
+        const file = event.dataTransfer.files[0];
+        if (file && file.type.startsWith('audio/')) {
+          audioFileInput.files = event.dataTransfer.files;
+          const audioUrl = URL.createObjectURL(file);
+          uploadedAudio.src = audioUrl;
+          uploadedAudioPlayer.style.display = 'block';
+          
+          // Enable transcribe button
+          document.getElementById('transcribeBtn').disabled = false;
+          
+          showNotification('Audio file uploaded successfully');
+        } else {
+          showNotification('Please drop a valid audio file', true);
+        }
+      });
+    }
+
+    // Simulate speech-to-text transcription
+    function simulateTranscription() {
+      const transcriptionText = document.getElementById('transcriptionText');
+      const processingIndicator = document.getElementById('processingIndicator');
+      const transcribeBtn = document.getElementById('transcribeBtn');
+      
+      // Sample transcriptions for demo purposes
+      const sampleTranscriptions = [
+        "I need to finish the quarterly report by Friday. Also, remember to schedule a meeting with the design team about the new website layout. Don't forget to call the client back tomorrow morning.",
+        "Create a new task for updating the user documentation. We should also fix the login page bug that's affecting mobile users. Finally, prepare the presentation for next week's stakeholder meeting.",
+        "The project deadline is approaching. We need to complete the API integration, test the payment system, and deploy to staging. Also, remember to order lunch for the team meeting on Wednesday.",
+        "Buy milk and eggs on the way home. Schedule dentist appointment for next week. Finish reading that book I started last month. Call mom on Sunday."
+      ];
+      
+      // Show processing indicator
+      transcribeBtn.disabled = true;
+      processingIndicator.style.display = 'flex';
+      
+      // Simulate processing delay
+      setTimeout(() => {
+        const randomTranscription = sampleTranscriptions[Math.floor(Math.random() * sampleTranscriptions.length)];
+        transcriptionText.textContent = randomTranscription;
+        
+        // Hide processing indicator
+        processingIndicator.style.display = 'none';
+        
+        // Extract tasks from transcription
+        extractTasksFromTranscription(randomTranscription);
+        
+        showNotification('Audio processed and tasks extracted');
+      }, 2000);
+    }
+
+    // Extract tasks from transcription text
+    function extractTasksFromTranscription(transcription) {
+      const extractedTasksList = document.getElementById('extractedTasksList');
+      const noTasksMessage = document.getElementById('noTasksMessage');
+      const createTasksBtn = document.getElementById('createTasksBtn');
+      
+      // Clear previous tasks
+      extractedTasksList.innerHTML = '';
+      
+      // Simple task extraction logic for demo purposes
+      const sentences = transcription.split(/[.!?]/).filter(s => s.trim().length > 0);
+      const extractedTasks = [];
+      
+      sentences.forEach(sentence => {
+        const lowerSentence = sentence.toLowerCase();
+        
+        // Look for task indicators in the sentence
+        if (lowerSentence.includes('need to') || 
+            lowerSentence.includes('remember to') || 
+            lowerSentence.includes('don\'t forget') || 
+            lowerSentence.includes('should') || 
+            lowerSentence.includes('must') || 
+            lowerSentence.includes('create') || 
+            lowerSentence.includes('finish') || 
+            lowerSentence.includes('complete') || 
+            lowerSentence.includes('prepare') || 
+            lowerSentence.includes('schedule') || 
+            lowerSentence.includes('call') || 
+            lowerSentence.includes('buy') || 
+            lowerSentence.includes('fix')) {
+          
+          // Clean up the task text
+          let taskText = sentence.trim();
+          
+          // Remove introductory phrases
+          const phrasesToRemove = [
+            'i need to', 'i should', 'i must', 'we need to', 'we should', 'we must',
+            'remember to', 'don\'t forget to', 'also', 'plus', 'and'
+          ];
+          
+          phrasesToRemove.forEach(phrase => {
+            if (taskText.toLowerCase().startsWith(phrase)) {
+              taskText = taskText.substring(phrase.length).trim();
+              // Capitalize first letter
+              taskText = taskText.charAt(0).toUpperCase() + taskText.slice(1);
+            }
+          });
+          
+          extractedTasks.push(taskText);
+        }
+      });
+      
+      // Display extracted tasks or show empty state
+      if (extractedTasks.length > 0) {
+        noTasksMessage.style.display = 'none';
+        
+        extractedTasks.forEach((task, index) => {
+          const li = document.createElement('li');
+          li.className = 'task-item';
+          li.innerHTML = `
+            <div class="task-info">
+              <div class="task-checkbox" data-task-index="${index}"></div>
+              <div class="task-title">${task}</div>
+            </div>
+            <div class="task-actions">
+              <button class="task-action" data-task-index="${index}">✏️</button>
+            </div>
+          `;
+          extractedTasksList.appendChild(li);
+        });
+        
+        // Enable create tasks button
+        createTasksBtn.disabled = false;
+        
+        // Set up task selection
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+          checkbox.addEventListener('click', (event) => {
+            event.target.classList.toggle('checked');
+          });
+        });
+        
+        // Set up task editing
+        document.querySelectorAll('.task-action').forEach(button => {
+          button.addEventListener('click', (event) => {
+            const taskIndex = event.target.dataset.taskIndex;
+            const taskTitle = extractedTasks[taskIndex];
+            const newTitle = prompt('Edit task:', taskTitle);
+            if (newTitle && newTitle.trim() !== '') {
+              extractedTasks[taskIndex] = newTitle.trim();
+              event.target.closest('.task-item').querySelector('.task-title').textContent = newTitle.trim();
+            }
+          });
+        });
+      } else {
+        noTasksMessage.style.display = 'block';
+        createTasksBtn.disabled = true;
+      }
+    }
+
+    // Create tasks from extracted tasks
+    function createTasksFromExtraction() {
+      const data = apiStub.getData();
+      if (!data.tasks) data.tasks = [];
+      if (!data.activities) data.activities = [];
+      
+      const selectedTasks = [];
+      
+      // Get selected tasks
+      document.querySelectorAll('.task-checkbox.checked').forEach(checkbox => {
+        const taskIndex = checkbox.dataset.taskIndex;
+        const taskItem = checkbox.closest('.task-item');
+        const taskTitle = taskItem.querySelector('.task-title').textContent;
+        selectedTasks.push(taskTitle);
+      });
+      
+      if (selectedTasks.length === 0) {
+        showNotification('Please select at least one task to create', true);
+        return;
+      }
+      
+      // Create new tasks
+      selectedTasks.forEach(taskTitle => {
+        const newTask = {
+          id: 't' + (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)),
+          title: taskTitle,
+          desc: 'Created from voice memo',
+          colId: 'c1', // Default to "To Do" column
+          assignee: null,
+          created: Date.now(),
+          updated: Date.now()
+        };
+        
+        data.tasks.push(newTask);
+        
+        // Log activity
+        data.activities.unshift({
+          ts: Date.now(),
+          msg: `Task "${taskTitle}" created from voice memo`
+        });
+      });
+      
+      // Save data
+      if (apiStub.setData(data)) {
+        showNotification(`Created ${selectedTasks.length} task(s) successfully`);
+        
+        // Clear extracted tasks
+        document.getElementById('extractedTasksList').innerHTML = '';
+        document.getElementById('noTasksMessage').style.display = 'block';
+        document.getElementById('createTasksBtn').disabled = true;
+        
+        // Reset audio players
+        document.getElementById('recordedAudioPlayer').style.display = 'none';
+        document.getElementById('uploadedAudioPlayer').style.display = 'none';
+        document.getElementById('transcriptionText').textContent = 'Record audio or upload a file to see the transcription here.';
+        document.getElementById('transcribeBtn').disabled = true;
+      } else {
+        showNotification('Error creating tasks', true);
+      }
+    }
+
+    // Initialize the voice memo page
+    function initVoiceMemoPage() {
+      if (!checkAuth()) return;
+      
+      // Initialize audio functionality
+      initAudioRecorder();
+      initFileUpload();
+      
+      // Set up event listeners
+      document.getElementById('transcribeBtn').addEventListener('click', simulateTranscription);
+      
+      document.getElementById('createTasksBtn').addEventListener('click', createTasksFromExtraction);
+      
+      document.getElementById('clearTasksBtn').addEventListener('click', () => {
+        document.getElementById('extractedTasksList').innerHTML = '';
+        document.getElementById('noTasksMessage').style.display = 'block';
+        document.getElementById('createTasksBtn').disabled = true;
+      });
+      
+      // Set up logout button
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        apiStub.clearSession();
+        window.location.href = 'index.html';
+      });
+    }
+
+    // Run initialization when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initVoiceMemoPage);
+  </script>
+</body>
+</html>
